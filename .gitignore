@@ -1,0 +1,43 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Testing & coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Type checkers / linters
+.mypy_cache/
+.ruff_cache/
+.pytype/
+
+# Environment variables & secrets
+.env
+.env.local
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Editor/OS clutter (harmless to keep even if you don't need them)
+.DS_Store
+Thumbs.db
