@@ -1,0 +1,122 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\John Paul\\EquipmentBorrowing\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{32A52609-82A5-BC0C-A6ED-64F847E50E62}|src\\EquipmentBorrowing.Infrastructure\\EquipmentBorrowing.Infrastructure.csproj|c:\\users\\john paul\\equipmentborrowing\\src\\equipmentborrowing.infrastructure\\repositories\\equipmentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{32A52609-82A5-BC0C-A6ED-64F847E50E62}|src\\EquipmentBorrowing.Infrastructure\\EquipmentBorrowing.Infrastructure.csproj|solutionrelative:src\\equipmentborrowing.infrastructure\\repositories\\equipmentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{ED7DC5AC-BB0B-ABF6-A7D8-0907521AD2B1}|src\\EquipmentBorrowing.Application\\EquipmentBorrowing.Application.csproj|c:\\users\\john paul\\equipmentborrowing\\src\\equipmentborrowing.application\\services\\borrowingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{ED7DC5AC-BB0B-ABF6-A7D8-0907521AD2B1}|src\\EquipmentBorrowing.Application\\EquipmentBorrowing.Application.csproj|solutionrelative:src\\equipmentborrowing.application\\services\\borrowingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{ED7DC5AC-BB0B-ABF6-A7D8-0907521AD2B1}|src\\EquipmentBorrowing.Application\\EquipmentBorrowing.Application.csproj|c:\\users\\john paul\\equipmentborrowing\\src\\equipmentborrowing.application\\interfaces\\iequipmentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{ED7DC5AC-BB0B-ABF6-A7D8-0907521AD2B1}|src\\EquipmentBorrowing.Application\\EquipmentBorrowing.Application.csproj|solutionrelative:src\\equipmentborrowing.application\\interfaces\\iequipmentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1794FC16-81B3-AEAF-AFEB-B95D7BAC4865}|src\\EquipmentBorrowing.Domain\\EquipmentBorrowing.Domain.csproj|c:\\users\\john paul\\equipmentborrowing\\src\\equipmentborrowing.domain\\borrowingstatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1794FC16-81B3-AEAF-AFEB-B95D7BAC4865}|src\\EquipmentBorrowing.Domain\\EquipmentBorrowing.Domain.csproj|solutionrelative:src\\equipmentborrowing.domain\\borrowingstatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1794FC16-81B3-AEAF-AFEB-B95D7BAC4865}|src\\EquipmentBorrowing.Domain\\EquipmentBorrowing.Domain.csproj|c:\\users\\john paul\\equipmentborrowing\\src\\equipmentborrowing.domain\\borrowing.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1794FC16-81B3-AEAF-AFEB-B95D7BAC4865}|src\\EquipmentBorrowing.Domain\\EquipmentBorrowing.Domain.csproj|solutionrelative:src\\equipmentborrowing.domain\\borrowing.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{ED7DC5AC-BB0B-ABF6-A7D8-0907521AD2B1}|src\\EquipmentBorrowing.Application\\EquipmentBorrowing.Application.csproj|c:\\users\\john paul\\equipmentborrowing\\src\\equipmentborrowing.application\\equipmentborrowing.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{ED7DC5AC-BB0B-ABF6-A7D8-0907521AD2B1}|src\\EquipmentBorrowing.Application\\EquipmentBorrowing.Application.csproj|solutionrelative:src\\equipmentborrowing.application\\equipmentborrowing.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "EquipmentRepository.cs",
+              "DocumentMoniker": "C:\\Users\\John Paul\\EquipmentBorrowing\\src\\EquipmentBorrowing.Infrastructure\\Repositories\\EquipmentRepository.cs",
+              "RelativeDocumentMoniker": "src\\EquipmentBorrowing.Infrastructure\\Repositories\\EquipmentRepository.cs",
+              "ToolTip": "C:\\Users\\John Paul\\EquipmentBorrowing\\src\\EquipmentBorrowing.Infrastructure\\Repositories\\EquipmentRepository.cs",
+              "RelativeToolTip": "src\\EquipmentBorrowing.Infrastructure\\Repositories\\EquipmentRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-27T11:04:02.078Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "BorrowingService.cs",
+              "DocumentMoniker": "C:\\Users\\John Paul\\EquipmentBorrowing\\src\\EquipmentBorrowing.Application\\Services\\BorrowingService.cs",
+              "RelativeDocumentMoniker": "src\\EquipmentBorrowing.Application\\Services\\BorrowingService.cs",
+              "ToolTip": "C:\\Users\\John Paul\\EquipmentBorrowing\\src\\EquipmentBorrowing.Application\\Services\\BorrowingService.cs",
+              "RelativeToolTip": "src\\EquipmentBorrowing.Application\\Services\\BorrowingService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-27T11:02:44.526Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "IEquipmentRepository.cs",
+              "DocumentMoniker": "C:\\Users\\John Paul\\EquipmentBorrowing\\src\\EquipmentBorrowing.Application\\Interfaces\\IEquipmentRepository.cs",
+              "RelativeDocumentMoniker": "src\\EquipmentBorrowing.Application\\Interfaces\\IEquipmentRepository.cs",
+              "ToolTip": "C:\\Users\\John Paul\\EquipmentBorrowing\\src\\EquipmentBorrowing.Application\\Interfaces\\IEquipmentRepository.cs",
+              "RelativeToolTip": "src\\EquipmentBorrowing.Application\\Interfaces\\IEquipmentRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-27T10:40:31.966Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "BorrowingStatus.cs",
+              "DocumentMoniker": "C:\\Users\\John Paul\\EquipmentBorrowing\\src\\EquipmentBorrowing.Domain\\BorrowingStatus.cs",
+              "RelativeDocumentMoniker": "src\\EquipmentBorrowing.Domain\\BorrowingStatus.cs",
+              "ToolTip": "C:\\Users\\John Paul\\EquipmentBorrowing\\src\\EquipmentBorrowing.Domain\\BorrowingStatus.cs",
+              "RelativeToolTip": "src\\EquipmentBorrowing.Domain\\BorrowingStatus.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-27T10:38:03.521Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Borrowing.cs",
+              "DocumentMoniker": "C:\\Users\\John Paul\\EquipmentBorrowing\\src\\EquipmentBorrowing.Domain\\Borrowing.cs",
+              "RelativeDocumentMoniker": "src\\EquipmentBorrowing.Domain\\Borrowing.cs",
+              "ToolTip": "C:\\Users\\John Paul\\EquipmentBorrowing\\src\\EquipmentBorrowing.Domain\\Borrowing.cs",
+              "RelativeToolTip": "src\\EquipmentBorrowing.Domain\\Borrowing.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-27T10:38:00.538Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "EquipmentBorrowing.Application",
+              "DocumentMoniker": "C:\\Users\\John Paul\\EquipmentBorrowing\\src\\EquipmentBorrowing.Application\\EquipmentBorrowing.Application.csproj",
+              "RelativeDocumentMoniker": "src\\EquipmentBorrowing.Application\\EquipmentBorrowing.Application.csproj",
+              "ToolTip": "C:\\Users\\John Paul\\EquipmentBorrowing\\src\\EquipmentBorrowing.Application\\EquipmentBorrowing.Application.csproj",
+              "RelativeToolTip": "src\\EquipmentBorrowing.Application\\EquipmentBorrowing.Application.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-08-27T10:18:49.555Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
