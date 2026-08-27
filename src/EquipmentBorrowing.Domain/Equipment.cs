@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace EquipmentBorrowing.Domain;
 
-namespace EquipmentBorrowing.Application
+public class Equipment
 {
-    internal class Equipment
-    {
-    }
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public bool IsAvailable { get; set; } = true;
 }
