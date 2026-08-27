@@ -1,75 +1,63 @@
-# equipment_borrowing (Python version of the lab's C# structure)
+**IV. Part A – Analyze the System Before Coding**
 
-Same layering the lab asks for — Domain / Application / Infrastructure / Tests —
-just written in Python instead of C#. Dataclasses stand in for C# records/classes,
-`ABC` stands in for C# interfaces, `async def` stands in for `Task<T>`.
+**A. Actors**
+- Students
+- Laboratory Staff
+- 
+**B. Use Cases**
 
-## 1. Solution structure
+**USE CASE 01**
+| Item | Description |
+|---|---|
+| Use Case | Request Borrow Equipment |
+| Primary Actor | Student |
+| Preconditions | The student’ requested equipment should exists and available, and if the student has not reached maximum numbers of borrowed equipment |
+| Main Action | The student will request to borrow an equipment |
+| Expected Result |The request to borrow is approved and the system records the important details for borrowing the equipment |
+| Possible Failure | Student is not allowed to borrow based on certain circumstances, equipment does not exist, equipment unavailable |
 
-- **domain/** — `Student`, `Equipment`, `Borrowing`, `BorrowingStatus`. Plain data +
-  the one behavior that belongs to the concept itself (`Borrowing.mark_returned`).
-  No I/O, no framework code.
-- **application/** — `BorrowEquipmentService` (the one use case implemented),
-  the repository interfaces it depends on (`IStudentRepository`, etc.), and the
-  business-rule exceptions it can raise.
-- **infrastructure/** — `InMemory*Repository` classes: the only place that knows
-  data is sitting in a `dict`. Swapping these for real DB-backed repositories
-  later requires zero changes to `application/` or `domain/`.
-- **tests/** — `unittest.IsolatedAsyncioTestCase` tests for the service (success
-  + each failure path).
-- **demo.py** — runnable script showing one success case and two failure cases.
+**USE CASE 02**
+| Item | Description |
+|---|---|
+| Use Case | System Recording |
+| Primary Actor | Laboratory Staff |
+| Preconditions | The student's request to borrow an equipment is approved |
+| Main Action | The staff will record important details of the student that borrowed an item |
+| Expected Result | Successfully recorded student details and store it in a information datatase |
+| Possible Failure | The system fails to save the student's borrowing details due to missing, invalid, or incomplete information. |
 
-## 2. Dependency direction
+| Item | Description |
+|---|---|
+| Use Case | Return Equipment |
+| Primary Actor | Student |
+| Preconditions | The student has an active borrowed equipment |
+| Main Action | The student will return the equipment |
+| Expected Result | The equipment is returned and the equipment is marked as available again in the system |
+| Possible Failure | The student has no active borrowed equipment for it to return an equipment |
 
-```
-demo.py / tests
-      |
-      v
- application  ----depends on---->  domain
-      ^
-      | implements the interfaces
-      |
- infrastructure
-```
+**C. Identify Domain Concepts**
 
-`application` only knows about interfaces it defines itself; `infrastructure`
-depends *inward* on those interfaces, never the other way around. `domain` has
-zero outward dependencies.
+**STUDENT**
+  1. What information must it contain?
+  - Important details of the students related to borrowing equipment such as name, id number, date borrowed, student borrowing status, equipment borrowed, and expected return date.
+  2.What rules or state belong to it?
+  - If the student is able to borrow based on his borrowing status.
+  3. What should **not** be the responsibility of that object?
+  - Any actions that a laboratory staff should do such as checking item availability, record student details, and managing the overall system a staff member is responsible for.
+	
+**Equipment**
+  1. What information must it contain?
+  Equipment type, availability, quantity, name, id, status
+  2.What rules or state belong to it?
+  Change its state between available and currently borrowed
+  3. What should **not** be the responsibility of that object?
+  Any responsibility of the student and staff.
 
-## 3. Use case mapping (Borrow Equipment)
-
-```
-Actor:                Student
-Use Case:              Borrow Equipment
-Application Service:   BorrowEquipmentService.borrow()
-Domain Objects Used:   Student, Equipment, Borrowing, BorrowingStatus
-Repository Interfaces: IStudentRepository, IEquipmentRepository, IBorrowingRepository
-Infrastructure Impls:  InMemoryStudentRepository, InMemoryEquipmentRepository,
-                        InMemoryBorrowingRepository
-```
-
-## 4. Reflection
-
-1. **Why depend on an interface instead of a concrete repository?** So
-   `BorrowEquipmentService` can be tested and reasoned about without a real
-   database, and so the storage technology can change without touching the
-   business rule code.
-2. **What stays unchanged if a real DB is added?** All of `domain/` and
-   `application/` — only `infrastructure/` gets new classes
-   (e.g. `SqliteEquipmentRepository`) that implement the same interfaces.
-3. **Where would a GUI go?** A new top-level layer (e.g. a `ui/` package or a
-   separate app) that calls `BorrowEquipmentService`, the same way `demo.py`
-   does — it never touches the repositories directly.
-4. **Should a UI button run a DB query directly?** No — it should call the
-   application service, which enforces the business rules first. Otherwise
-   validation gets duplicated (or skipped) in every place that touches data.
-5. **What actually represents the business operation?**
-   `BorrowEquipmentService.borrow()` — everything else (domain models,
-   repositories) exists to support that one operation.
-
-## Run it
-
-```
-python3 demo.py
-python3 -m unittest discover -s tests -v
-```
+**Borrowing**
+  1. What information must it contain?
+  Equipment type, availability, quantity, name, id, status
+  2.What rules or state belong to it?
+  Change its state between available and currently borrowed
+  3. What should **not** be the responsibility of that object?
+  Any responsibility of the student and staff.
+          
