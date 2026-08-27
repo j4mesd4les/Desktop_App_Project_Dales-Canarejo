@@ -1,43 +1,114 @@
-# Byte-compiled / cache
-__pycache__/
-*.py[cod]
-*$py.class
+## =======================================================================
+## Visual Studio & .NET Core / .NET Standard / .NET 5+ Targets
+## =======================================================================
 
-# Virtual environments
-.venv/
-venv/
-env/
-ENV/
+# Build Results & Binaries
+[Bb]in/
+[Ob]j/
+[LLEe]og/
+[Ll]ogs/
+*_i.c
+*_p.c
+*_h.h
+*.meta
+*.header
+*.pch
+*.lib
+*.sbr
+*.obj
+*.idb
+*.pdb
+*.ilk
+*.aps
+*.ncb
+*.boff
+*.cob
+*.sog
+*.out
+*.exe
+*.axf
+*.dll
+*.elf
+*.o
 
-# Distribution / packaging
-build/
-dist/
-*.egg-info/
-.eggs/
+# Visual Studio Cache & Temporary Files
+.vs/
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
 
-# Testing & coverage
-.pytest_cache/
-.coverage
-.coverage.*
-htmlcov/
-.tox/
-.nox/
+# User-specific files (Visual Studio)
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
 
-# Type checkers / linters
-.mypy_cache/
-.ruff_cache/
-.pytype/
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
 
-# Environment variables & secrets
-.env
-.env.local
+# JetBrains Rider
+.idea/
+*.sln.iml
 
-# Jupyter
-.ipynb_checkpoints/
+# User-specific files (Mono / Rider / Custom)
+*.userprefs
 
-# Logs
-*.log
+# Test Results & Code Coverage
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.Received.*
+*.Verified.*
 
-# Editor/OS clutter (harmless to keep even if you don't need them)
+# NuGet Packages & Caches
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+
+# Entity Framework / Local Databases
+*.mdf
+*.ldf
+*.sqlite
+*.sqlite3
+*.db
+
+# macOS & Windows OS Files
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Environment / Secret Files
+.env
+.env.local
+*.user.config
+appsettings.Development.json
+appsettings.Local.json
