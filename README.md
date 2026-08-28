@@ -1,13 +1,13 @@
 # Campus Equipment Borrowing System
 
-## 1. Solution Structure
+**1. Solution Structure**
 
 * **Domain**: Holds and manage the core models such as Student, Equipment, Borrowinng, BorrowingStatus. There is no logic outside of basic object properties.
 * **Application**: This holds the rules and workflow of the system and defines repository interfaces.
 * **Infrastructure**: It Holds the actual data of storage logic.
 * **Tests**: Can be utilized for demo purposes and any testing process.
 
-## 2. Dependency Direction
+**2. Dependency Direction**
 
 ```text
 EquipmentBorrowing.Tests
@@ -21,7 +21,7 @@ EquipmentBorrowing.Application
       ▼
 EquipmentBorrowing.Domain
 
-## 2. Use Case Mapping
+**3. Use Case Mapping**
 
 Actor:                               Student
 Use Case:                            Borrow Equipment
@@ -31,7 +31,7 @@ Repository Interfaces Used:          IEquipmentRepository.cs, Exceptions.cs
 Infrastructure Implementations Used: EquipmentRepository.cs
 
 
-## 4. Reflection
+**4. Reflection**
 
 1. Why depend on repository interfaces instead of databases directly?
 - Because it keeps code flexible and can test easily in-memory and swap databases without changing application rules.
