@@ -119,9 +119,9 @@ Any actions that a laboratory staff should do such as checking item availability
 1. What information must it contain?
   EquipmentType, Availability, Quantity, Name, Id, Status, ExpectedReturnOn, BorrowedOn
 2.What rules or state belong to it?
-  It maintains the current state of the loan transaction (Active vs. Returned) and handles its     own return logic
+  It maintains the current state of the loan transaction (Active vs. Returned) and handles its own return logic.
 3. What should **not** be the responsibility of that object?
-  Any responsibilities from the actors like borrowing equipments, system handling, or fetching     and saving data from storage and etc.
+  Any responsibilities from the actors like borrowing equipments, system handling, or fetching and saving data from storage and etc.
 
 
           
