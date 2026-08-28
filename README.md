@@ -7,8 +7,20 @@
 * **Infrastructure**: It Holds the actual data of storage logic.
 * **Tests**: Can be utilized for demo purposes and any testing process.
 
-**2. Dependency Direction**
+# Campus Equipment Borrowing System
 
+## 1. Solution Structure
+
+* **Domain**: Holds your core models (`Student`, `Equipment`, `Borrowing`). No logic outside of basic object properties.
+* **Application**: Holds the rules and workflow (`BorrowEquipmentService`) and defines repository interfaces.
+* **Infrastructure**: Holds actual data storage logic (currently `InMemory` repositories).
+* **Tests**: The runnable entry point that acts as a demo to execute test cases.
+
+---
+
+## 2. Dependency Direction
+
+```text
 EquipmentBorrowing.Tests
       │
       ├───► EquipmentBorrowing.Infrastructure
@@ -19,6 +31,7 @@ EquipmentBorrowing.Application
       │
       ▼
 EquipmentBorrowing.Domain
+```
 
 **3. Use Case Mapping**
 
