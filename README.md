@@ -9,7 +9,6 @@
 
 **2. Dependency Direction**
 
-```text
 EquipmentBorrowing.Tests
       │
       ├───► EquipmentBorrowing.Infrastructure
