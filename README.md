@@ -47,7 +47,8 @@ Infrastructure Implementations Used: EquipmentRepository.cs
 **4. Reflection**
 
 1. Why depend on repository interfaces instead of databases directly?
-- Because it keeps code flexible and can test easily in-memory and swap databases without changing application rules.2. Which parts remain unchanged if SQLite is added?
+- Because it keeps code flexible and can test easily in-memory and swap databases without changing application rules.
+2. Which parts remain unchanged if SQLite is added?
 - Domain and Application would remain unchanged because they only depend on abstract rules and repository interfaces rather than actual database details.
 3. Which project would contain Avalonia Views?
 - It would be for new UI projects.
@@ -63,7 +64,7 @@ Infrastructure Implementations Used: EquipmentRepository.cs
 **A. Actors**
 - Students
 - Laboratory Staff
-- 
+
 **B. Use Cases**
 
 **USE CASE 01**
@@ -110,16 +111,20 @@ Any actions that a laboratory staff should do such as checking item availability
 **Equipment**
 1. What information must it contain?
   Equipment type, availability, quantity, name, id, status
+
 2.What rules or state belong to it?
   Change its state between available and currently borrowed
+  
 3. What should **not** be the responsibility of that object?
   Any responsibility of the student and staff.
 
 **Borrowing**
 1. What information must it contain?
   EquipmentType, Availability, Quantity, Name, Id, Status, ExpectedReturnOn, BorrowedOn
+
 2.What rules or state belong to it?
   It maintains the current state of the loan transaction (Active vs. Returned) and handles its own return logic.
+  
 3. What should **not** be the responsibility of that object?
   Any responsibilities from the actors like borrowing equipments, system handling, or fetching and saving data from storage and etc.
 
