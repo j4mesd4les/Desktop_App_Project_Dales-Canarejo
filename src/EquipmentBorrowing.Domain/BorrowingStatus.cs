@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace EquipmentBorrowing.Domain;
 
-namespace EquipmentBorrowing.Application
+public enum BorrowingStatus
 {
-    internal class BorrowingStatus
-    {
-    }
+    Active,
+    Returned
 }

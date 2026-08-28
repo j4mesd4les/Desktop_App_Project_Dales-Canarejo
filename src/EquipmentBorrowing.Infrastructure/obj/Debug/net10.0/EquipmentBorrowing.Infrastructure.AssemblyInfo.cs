@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EquipmentBorrowing.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c3cc8a7f9e0d7f6062437250145fbb95a665aab8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e08b492edb1c83d800fd4105d8d352f714e2d67e")]
 [assembly: System.Reflection.AssemblyProductAttribute("EquipmentBorrowing.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EquipmentBorrowing.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
