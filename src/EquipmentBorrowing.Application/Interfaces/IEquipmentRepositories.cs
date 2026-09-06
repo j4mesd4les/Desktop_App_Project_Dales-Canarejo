@@ -9,10 +9,17 @@ public interface IStudentRepository
 
 public interface IEquipmentRepository
 {
-    Task<Equipment?> GetByIdAsync(int equipmentId, CancellationToken cancellationToken = default);
-    Task SaveAsync(Equipment equipment, CancellationToken cancellationToken = default);
-}
+    Task<IReadOnlyList<Equipment>> GetAllAsync(
+        CancellationToken cancellationToken = default);
 
+    Task<Equipment?> GetByIdAsync(
+        int equipmentId,
+        CancellationToken cancellationToken = default);
+
+    Task SaveAsync(
+        Equipment equipment,
+        CancellationToken cancellationToken = default);
+}
 public interface IBorrowingRepository
 {
     Task AddAsync(Borrowing borrowing, CancellationToken cancellationToken = default);

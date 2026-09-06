@@ -2,25 +2,60 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d"
-             d:DesignWidth="800"
-             d:DesignHeight="450"
+             mc:Ignorable="d" 
+             d:DesignWidth="800" d:DesignHeight="450"
              x:Class="EquipmentBorrowing.Desktop.Views.BorrowingsView">
 
-    <StackPanel Margin="20">
-        <TextBlock Text="Active Borrowings"
-                   FontSize="28"
-                   FontWeight="Bold"
-                   Margin="0,0,0,20"/>
+    <Grid RowDefinitions="Auto, *, Auto">
+        
+        <!-- Header Section -->
+        <StackPanel Grid.Row="0" Spacing="5" Margin="0,0,0,20">
+            <TextBlock Text="Active Borrowings"
+                       FontSize="28"
+                       FontWeight="SemiBold"
+                       Foreground="#212529"/>
+            
+            <TextBlock Text="View currently borrowed equipment and process returns."
+                       FontSize="14"
+                       Foreground="#6C757D"/>
+        </StackPanel>
 
-        <TextBlock Text="View and manage currently borrowed equipment."
-                   FontSize="16"
-                   Margin="0,0,0,10"/>
-
-        <Border Padding="15">
-            <TextBlock Text="Active borrowings will appear here."
-                       FontSize="16"/>
+        <!-- Data Presentation Area -->
+        <Border Grid.Row="1" 
+                Background="#F8F9FA" 
+                BorderBrush="#DEE2E6" 
+                BorderThickness="1" 
+                CornerRadius="8">
+            
+            <!-- A ListBox is used here as a foundation for data binding your Borrowings collection later -->
+            <ListBox Background="Transparent" 
+                     BorderThickness="0"
+                     Margin="10">
+                
+                <!-- Placeholder text for the empty state -->
+                <TextBlock Text="No active borrowings to display."
+                           Foreground="#ADB5BD"
+                           FontSize="16"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Margin="0,40,0,0"/>
+            </ListBox>
         </Border>
-    </StackPanel>
+
+        <!-- Action Panel -->
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    Margin="0,20,0,0">
+            
+            <Button Content="Return Selected Equipment"
+                    Background="#0056b3"
+                    Foreground="White"
+                    FontWeight="Medium"
+                    Padding="20,10"
+                    CornerRadius="4"/>
+        </StackPanel>
+        
+    </Grid>
 
 </UserControl>

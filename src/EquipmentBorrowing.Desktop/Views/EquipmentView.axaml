@@ -2,24 +2,89 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" 
-             d:DesignWidth="800" 
+             xmlns:vm="using:EquipmentBorrowing.Desktop.ViewModels"
+             xmlns:domain="using:EquipmentBorrowing.Domain"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
              d:DesignHeight="450"
-             x:Class="EquipmentBorrowing.Desktop.Views.EquipmentView">
+             x:Class="EquipmentBorrowing.Desktop.Views.EquipmentView"
+             x:DataType="vm:EquipmentViewModel">
 
-  <StackPanel Margin="20">
-        <TextBlock Text="Equipment"
-                   FontSize="28"
-                   FontWeight="Bold"
-                   Margin="0,0,0,20"/>
+    <!-- Switched to Grid to allow the ListBox to stretch vertically -->
+    <Grid RowDefinitions="Auto, *, Auto">
 
-        <TextBlock Text="Available equipment"
-                   FontSize="18"
-                   Margin="0,0,0,10"/>
+        <!-- Header Section -->
+        <StackPanel Grid.Row="0" Spacing="5" Margin="0,0,0,20">
+            <TextBlock Text="Available Equipment"
+                       FontSize="28"
+                       FontWeight="SemiBold"
+                       Foreground="#212529"/>
+            <TextBlock Text="Select an item below to initiate a borrowing transaction."
+                       FontSize="14"
+                       Foreground="#6C757D"/>
+        </StackPanel>
 
-        <Border Padding="15">
-            <TextBlock Text="Equipment list will appear here."
-                       FontSize="16"/>
+        <!-- Data Presentation Area -->
+        <Border Grid.Row="1" 
+                Background="#F8F9FA" 
+                BorderBrush="#DEE2E6" 
+                BorderThickness="1" 
+                CornerRadius="8">
+            
+            <ListBox ItemsSource="{Binding Equipment}" 
+                     Background="Transparent" 
+                     BorderThickness="0"
+                     Margin="10">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="domain:Equipment">
+                        
+                        <!-- Individual Item Card -->
+                        <Border Padding="15"
+                                Margin="0,0,0,8"
+                                Background="White"
+                                BorderBrush="#DEE2E6"
+                                BorderThickness="1"
+                                CornerRadius="6">
+
+                            <Grid ColumnDefinitions="80, *, Auto">
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Id, StringFormat='#{0}'}"
+                                           FontWeight="Bold"
+                                           Foreground="#0056b3"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Name}"
+                                           FontSize="16"
+                                           FontWeight="Medium"
+                                           Foreground="#212529"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="2"
+                                           Text="{Binding IsAvailable, StringFormat='Available: {0}'}"
+                                           Foreground="#6C757D"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                            
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </Border>
-    </StackPanel>
+
+        <!-- Action Panel for Part E -->
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    Margin="0,20,0,0">
+            
+            <Button Content="Borrow Selected Equipment"
+                    Background="#0056b3"
+                    Foreground="White"
+                    FontWeight="Medium"
+                    Padding="20,10"
+                    CornerRadius="4"/>
+        </StackPanel>
+
+    </Grid>
 </UserControl>
