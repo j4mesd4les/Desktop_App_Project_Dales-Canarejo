@@ -40,3 +40,5 @@ catch (EquipmentNotFoundError exc)
 {
     Console.WriteLine($"Rejected as expected: {exc.Message}");
 }
+
+Console.ReadKey();

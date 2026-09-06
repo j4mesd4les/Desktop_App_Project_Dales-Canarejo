@@ -1,22 +1,82 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:EquipmentBorrowing.Desktop.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d"
         x:Class="EquipmentBorrowing.Desktop.Views.MainWindow"
-        x:DataType="vm:MainViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="EquipmentBorrowing.Desktop">
+        Title="Campus Equipment Borrowing System"
+        Width="1000"
+        Height="650"
+        WindowStartupLocation="CenterScreen">
 
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainViewModel />
-    </Design.DataContext>
+    <Grid ColumnDefinitions="250, *">
 
-    <TextBox Text="{Binding Greeting}"
-             HorizontalAlignment="Center"
-             VerticalAlignment="Center" />
+        <!-- Sidebar Navigation -->
+        <Border Grid.Column="0"
+                Background="#F8F9FA"
+                BorderBrush="#DEE2E6"
+                BorderThickness="0,0,1,0"
+                Padding="20">
+            
+            <StackPanel Spacing="15">
+                
+                <!-- Enabled TextWrapping to prevent clipping -->
+                <TextBlock Text="Campus Equipment Borrowing System"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           TextWrapping="Wrap"
+                           Foreground="#212529"
+                           Margin="0,0,0,15"/>
 
+                <!-- Styled to look like navigation menu items -->
+                <Button Content="Equipment"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Padding="15,10"
+                        CornerRadius="4"/>
+
+                <Button Content="Active Borrowings"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Padding="15,10"
+                        CornerRadius="4"/>
+
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Border Grid.Column="1"
+                Background="#FFFFFF"
+                Padding="40">
+            
+            <!-- Note: This StackPanel is a placeholder. 
+                 You will eventually swap this out dynamically using your ViewModels -->
+            <StackPanel Spacing="10">
+
+                <TextBlock Text="Equipment"
+                           FontSize="28"
+                           FontWeight="SemiBold"
+                           Foreground="#212529"/>
+
+                <TextBlock Text="Manage available equipment and initiate new borrowing transactions."
+                           FontSize="14"
+                           Foreground="#6C757D"
+                           Margin="0,0,0,20"/>
+
+                <!-- Placeholder card for the future data grid -->
+                <Border Background="#F8F9FA" 
+                        BorderBrush="#DEE2E6" 
+                        BorderThickness="1" 
+                        CornerRadius="8"
+                        Padding="60">
+                    <TextBlock Text="Equipment View will render here."
+                               FontSize="16"
+                               Foreground="#ADB5BD"
+                               HorizontalAlignment="Center"/>
+                </Border>
+
+            </StackPanel>
+        </Border>
+
+    </Grid>
 </Window>

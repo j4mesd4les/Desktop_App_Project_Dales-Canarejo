@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" 
+             d:DesignWidth="800" 
+             d:DesignHeight="450"
+             x:Class="EquipmentBorrowing.Desktop.Views.EquipmentView">
+
+  <StackPanel Margin="20">
+        <TextBlock Text="Equipment"
+                   FontSize="28"
+                   FontWeight="Bold"
+                   Margin="0,0,0,20"/>
+
+        <TextBlock Text="Available equipment"
+                   FontSize="18"
+                   Margin="0,0,0,10"/>
+
+        <Border Padding="15">
+            <TextBlock Text="Equipment list will appear here."
+                       FontSize="16"/>
+        </Border>
+    </StackPanel>
+</UserControl>
