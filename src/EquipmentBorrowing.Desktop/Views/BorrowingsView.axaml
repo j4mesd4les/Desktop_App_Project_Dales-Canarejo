@@ -2,60 +2,103 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" 
-             d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="EquipmentBorrowing.Desktop.Views.BorrowingsView">
+             xmlns:vm="using:EquipmentBorrowing.Desktop.ViewModels"
+             xmlns:domain="using:EquipmentBorrowing.Domain"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="450"
+             x:Class="EquipmentBorrowing.Desktop.Views.BorrowingsView"
+             x:DataType="vm:EquipmentViewModel">
 
     <Grid RowDefinitions="Auto, *, Auto">
-        
+
         <!-- Header Section -->
-        <StackPanel Grid.Row="0" Spacing="5" Margin="0,0,0,20">
-            <TextBlock Text="Active Borrowings"
+        <StackPanel Grid.Row="0"
+                    Spacing="5"
+                    Margin="0,0,0,20">
+
+            <TextBlock Text="Available Equipment"
                        FontSize="28"
                        FontWeight="SemiBold"
                        Foreground="#212529"/>
-            
-            <TextBlock Text="View currently borrowed equipment and process returns."
+
+            <TextBlock Text="Select an item below to initiate a borrowing transaction."
                        FontSize="14"
                        Foreground="#6C757D"/>
+
         </StackPanel>
 
-        <!-- Data Presentation Area -->
-        <Border Grid.Row="1" 
-                Background="#F8F9FA" 
-                BorderBrush="#DEE2E6" 
-                BorderThickness="1" 
+        <!-- Equipment List -->
+        <Border Grid.Row="1"
+                Background="#F8F9FA"
+                BorderBrush="#DEE2E6"
+                BorderThickness="1"
                 CornerRadius="8">
-            
-            <!-- A ListBox is used here as a foundation for data binding your Borrowings collection later -->
-            <ListBox Background="Transparent" 
+
+            <ListBox ItemsSource="{Binding Equipment}"
+                     SelectedItem="{Binding SelectedEquipment}"
+                     Background="Transparent"
                      BorderThickness="0"
                      Margin="10">
-                
-                <!-- Placeholder text for the empty state -->
-                <TextBlock Text="No active borrowings to display."
-                           Foreground="#ADB5BD"
-                           FontSize="16"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           Margin="0,40,0,0"/>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="domain:Equipment">
+
+                        <!-- Individual Equipment Card -->
+                        <Border Padding="15"
+                                Margin="0,0,0,8"
+                                Background="White"
+                                BorderBrush="#DEE2E6"
+                                BorderThickness="1"
+                                CornerRadius="6">
+
+                            <Grid ColumnDefinitions="80, *, Auto">
+
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Id, StringFormat='#{0}'}"
+                                           FontWeight="Bold"
+                                           Foreground="#0056b3"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Name}"
+                                           FontSize="16"
+                                           FontWeight="Medium"
+                                           Foreground="#212529"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="2"
+                                           Text="Available"
+                                           Foreground="#6C757D"
+                                           VerticalAlignment="Center"/>
+
+                            </Grid>
+
+                        </Border>
+
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+
             </ListBox>
+
         </Border>
 
         <!-- Action Panel -->
-        <StackPanel Grid.Row="2" 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Right" 
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
                     Margin="0,20,0,0">
-            
-            <Button Content="Return Selected Equipment"
+
+            <Button Content="Borrow Selected Equipment"
+                    Command="{Binding BorrowSelectedEquipmentCommand}"
                     Background="#0056b3"
                     Foreground="White"
                     FontWeight="Medium"
                     Padding="20,10"
                     CornerRadius="4"/>
+
         </StackPanel>
-        
+
     </Grid>
 
 </UserControl>

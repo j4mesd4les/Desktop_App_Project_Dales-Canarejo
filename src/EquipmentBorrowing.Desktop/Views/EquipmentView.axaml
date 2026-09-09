@@ -10,35 +10,41 @@
              x:Class="EquipmentBorrowing.Desktop.Views.EquipmentView"
              x:DataType="vm:EquipmentViewModel">
 
-    <!-- Switched to Grid to allow the ListBox to stretch vertically -->
     <Grid RowDefinitions="Auto, *, Auto">
 
         <!-- Header Section -->
-        <StackPanel Grid.Row="0" Spacing="5" Margin="0,0,0,20">
+        <StackPanel Grid.Row="0"
+                    Spacing="5"
+                    Margin="0,0,0,20">
+
             <TextBlock Text="Available Equipment"
                        FontSize="28"
                        FontWeight="SemiBold"
                        Foreground="#212529"/>
+
             <TextBlock Text="Select an item below to initiate a borrowing transaction."
                        FontSize="14"
                        Foreground="#6C757D"/>
+
         </StackPanel>
 
-        <!-- Data Presentation Area -->
-        <Border Grid.Row="1" 
-                Background="#F8F9FA" 
-                BorderBrush="#DEE2E6" 
-                BorderThickness="1" 
+        <!-- Equipment List -->
+        <Border Grid.Row="1"
+                Background="#F8F9FA"
+                BorderBrush="#DEE2E6"
+                BorderThickness="1"
                 CornerRadius="8">
-            
-            <ListBox ItemsSource="{Binding Equipment}" 
-                     Background="Transparent" 
+
+            <ListBox ItemsSource="{Binding Equipment}"
+                     SelectedItem="{Binding SelectedEquipment}"
+                     Background="Transparent"
                      BorderThickness="0"
                      Margin="10">
+
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="domain:Equipment">
-                        
-                        <!-- Individual Item Card -->
+
+                        <!-- Individual Equipment Card -->
                         <Border Padding="15"
                                 Margin="0,0,0,8"
                                 Background="White"
@@ -47,6 +53,7 @@
                                 CornerRadius="6">
 
                             <Grid ColumnDefinitions="80, *, Auto">
+
                                 <TextBlock Grid.Column="0"
                                            Text="{Binding Id, StringFormat='#{0}'}"
                                            FontWeight="Bold"
@@ -61,30 +68,38 @@
                                            VerticalAlignment="Center"/>
 
                                 <TextBlock Grid.Column="2"
-                                           Text="{Binding IsAvailable, StringFormat='Available: {0}'}"
+                                           Text="{Binding AvailabilityStatus}"
                                            Foreground="#6C757D"
                                            VerticalAlignment="Center"/>
+
                             </Grid>
-                            
+
                         </Border>
+
                     </DataTemplate>
                 </ListBox.ItemTemplate>
+
             </ListBox>
+
         </Border>
 
-        <!-- Action Panel for Part E -->
-        <StackPanel Grid.Row="2" 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Right" 
+        <!-- Action Panel -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
                     Margin="0,20,0,0">
-            
+
             <Button Content="Borrow Selected Equipment"
+                    Command="{Binding BorrowSelectedEquipmentCommand}"
                     Background="#0056b3"
                     Foreground="White"
                     FontWeight="Medium"
                     Padding="20,10"
                     CornerRadius="4"/>
+
         </StackPanel>
 
     </Grid>
+
 </UserControl>
+
