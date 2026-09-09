@@ -2,14 +2,123 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="EquipmentBorrowing.Desktop.App"
              xmlns:local="using:EquipmentBorrowing.Desktop"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+             RequestedThemeVariant="Light">
+    <!--
+        Pinned to "Light" on purpose: every view in this app uses hardcoded
+        light colors (#F8F9FA panels, white cards, #212529 text). If this is
+        left as "Default", FluentTheme flips its own controls (buttons, list
+        selection, etc.) to dark styling whenever the OS is in dark mode,
+        while our hardcoded panels stay light. The result is mismatched
+        contrast and a broken/unfinished look. Since the app isn't set up
+        with a dark palette, pinning to Light keeps everything consistent.
+    -->
 
     <Application.DataTemplates>
         <local:ViewLocator />
     </Application.DataTemplates>
 
+    <Application.Resources>
+        <SolidColorBrush x:Key="AppPrimaryBrush">#0056B3</SolidColorBrush>
+        <SolidColorBrush x:Key="AppPrimaryHoverBrush">#004494</SolidColorBrush>
+        <SolidColorBrush x:Key="AppPrimaryPressedBrush">#00397A</SolidColorBrush>
+        <SolidColorBrush x:Key="AppPrimaryDisabledBrush">#8FB3D9</SolidColorBrush>
+
+        <SolidColorBrush x:Key="AppSidebarBrush">#F8F9FA</SolidColorBrush>
+        <SolidColorBrush x:Key="AppSidebarHoverBrush">#E9ECEF</SolidColorBrush>
+        <SolidColorBrush x:Key="AppBorderBrush">#DEE2E6</SolidColorBrush>
+        <SolidColorBrush x:Key="AppSelectedFillBrush">#E7F1FF</SolidColorBrush>
+
+        <SolidColorBrush x:Key="AppTextPrimaryBrush">#212529</SolidColorBrush>
+        <SolidColorBrush x:Key="AppTextSecondaryBrush">#495057</SolidColorBrush>
+        <SolidColorBrush x:Key="AppErrorBrush">#C0392B</SolidColorBrush>
+        <SolidColorBrush x:Key="AppSuccessBrush">#1E7E34</SolidColorBrush>
+    </Application.Resources>
+
     <Application.Styles>
         <FluentTheme />
+
+        <!-- Primary action buttons: Borrow / Return -->
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="{StaticResource AppPrimaryBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="Padding" Value="20,10" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+        <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource AppPrimaryHoverBrush}" />
+        </Style>
+        <Style Selector="Button.primary:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource AppPrimaryPressedBrush}" />
+        </Style>
+        <Style Selector="Button.primary:disabled /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource AppPrimaryDisabledBrush}" />
+        </Style>
+
+        <!-- Sidebar navigation buttons, with an "active" state for the current page -->
+        <Style Selector="Button.nav">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{StaticResource AppTextPrimaryBrush}" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Padding" Value="15,10" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+        <Style Selector="Button.nav:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource AppSidebarHoverBrush}" />
+        </Style>
+        <Style Selector="Button.nav.active /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource AppPrimaryBrush}" />
+        </Style>
+        <Style Selector="Button.nav.active">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.nav.active:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource AppPrimaryHoverBrush}" />
+        </Style>
+
+        <!--
+            Selection contrast fix: the card Border in each list's DataTemplate
+            paints an opaque white background, which was hiding Avalonia's
+            built-in selected-item highlight entirely. This targets that card
+            directly (by its "itemCard" class) so a selected row is actually
+            visible: tinted fill + colored border.
+        -->
+        <Style Selector="ListBoxItem:selected Border.itemCard">
+            <Setter Property="Background" Value="{StaticResource AppSelectedFillBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource AppPrimaryBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+        </Style>
+        <Style Selector="ListBoxItem:pointerover Border.itemCard">
+            <Setter Property="BorderBrush" Value="#AACBEB" />
+        </Style>
+
+        <!-- Equipment availability badge: red-tinted = not available, green-tinted = available -->
+        <Style Selector="Border.availabilityBadge">
+            <Setter Property="Background" Value="#FBE7E5" />
+        </Style>
+        <Style Selector="Border.availabilityBadge TextBlock.availabilityBadgeText">
+            <Setter Property="Foreground" Value="{StaticResource AppErrorBrush}" />
+        </Style>
+        <Style Selector="Border.availabilityBadge.available">
+            <Setter Property="Background" Value="#E3F3E6" />
+        </Style>
+        <Style Selector="Border.availabilityBadge.available TextBlock.availabilityBadgeText">
+            <Setter Property="Foreground" Value="{StaticResource AppSuccessBrush}" />
+        </Style>
+
+        <!-- Status message text: neutral by default, red on error -->
+        <Style Selector="TextBlock.message">
+            <Setter Property="Foreground" Value="{StaticResource AppTextSecondaryBrush}" />
+        </Style>
+        <Style Selector="TextBlock.message.error">
+            <Setter Property="Foreground" Value="{StaticResource AppErrorBrush}" />
+            <Setter Property="FontWeight" Value="Medium" />
+        </Style>
+        <Style Selector="TextBlock.message.success">
+            <Setter Property="Foreground" Value="{StaticResource AppSuccessBrush}" />
+            <Setter Property="FontWeight" Value="Medium" />
+        </Style>
     </Application.Styles>
 </Application>

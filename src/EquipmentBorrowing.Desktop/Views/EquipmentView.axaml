@@ -1,105 +1,162 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:EquipmentBorrowing.Desktop.ViewModels"
-             xmlns:domain="using:EquipmentBorrowing.Domain"
-             mc:Ignorable="d"
-             d:DesignWidth="800"
-             d:DesignHeight="450"
-             x:Class="EquipmentBorrowing.Desktop.Views.EquipmentView"
-             x:DataType="vm:EquipmentViewModel">
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+          xmlns:vm="using:EquipmentBorrowing.Desktop.ViewModels"
+          xmlns:domain="using:EquipmentBorrowing.Domain"
+          mc:Ignorable="d"
+          d:DesignWidth="800"
+          d:DesignHeight="450"
+          x:Class="EquipmentBorrowing.Desktop.Views.EquipmentView"
+          x:DataType="vm:EquipmentViewModel">
 
-    <Grid RowDefinitions="Auto, *, Auto">
 
-        <!-- Header Section -->
-        <StackPanel Grid.Row="0"
-                    Spacing="5"
-                    Margin="0,0,0,20">
+<Grid RowDefinitions="Auto, Auto, *, Auto">
 
-            <TextBlock Text="Available Equipment"
-                       FontSize="28"
-                       FontWeight="SemiBold"
-                       Foreground="#212529"/>
+    <!-- Header -->
+    <StackPanel Grid.Row="0"
+                Spacing="5"
+                Margin="0,0,0,20">
 
-            <TextBlock Text="Select an item below to initiate a borrowing transaction."
+        <TextBlock Text="Available Equipment"
+                   FontSize="28"
+                   FontWeight="SemiBold"
+                   Foreground="{StaticResource AppTextPrimaryBrush}"/>
+
+        <TextBlock Text="Select a student, equipment item, and expected return date."
+                   FontSize="14"
+                   Foreground="{StaticResource AppTextSecondaryBrush}"/>
+
+    </StackPanel>
+
+    <!-- Borrowing Information -->
+    <Grid Grid.Row="1"
+          ColumnDefinitions="*, *"
+          ColumnSpacing="20"
+          Margin="0,0,0,15">
+
+        <!-- Student Selection -->
+        <StackPanel Grid.Column="0"
+                    Spacing="6">
+
+            <TextBlock Text="Student"
                        FontSize="14"
-                       Foreground="#6C757D"/>
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource AppTextPrimaryBrush}"/>
+
+            <ComboBox ItemsSource="{Binding Students}"
+                      SelectedItem="{Binding SelectedStudent}"
+                      HorizontalAlignment="Stretch"
+                      PlaceholderText="Select a student">
+
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="domain:Student">
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+
+            </ComboBox>
 
         </StackPanel>
 
-        <!-- Equipment List -->
-        <Border Grid.Row="1"
-                Background="#F8F9FA"
-                BorderBrush="#DEE2E6"
-                BorderThickness="1"
-                CornerRadius="8">
+        <!-- Expected Return Date -->
+        <StackPanel Grid.Column="1"
+                    Spacing="6">
 
-            <ListBox ItemsSource="{Binding Equipment}"
-                     SelectedItem="{Binding SelectedEquipment}"
-                     Background="Transparent"
-                     BorderThickness="0"
-                     Margin="10">
+            <TextBlock Text="Expected Return Date"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource AppTextPrimaryBrush}"/>
 
-                <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="domain:Equipment">
-
-                        <!-- Individual Equipment Card -->
-                        <Border Padding="15"
-                                Margin="0,0,0,8"
-                                Background="White"
-                                BorderBrush="#DEE2E6"
-                                BorderThickness="1"
-                                CornerRadius="6">
-
-                            <Grid ColumnDefinitions="80, *, Auto">
-
-                                <TextBlock Grid.Column="0"
-                                           Text="{Binding Id, StringFormat='#{0}'}"
-                                           FontWeight="Bold"
-                                           Foreground="#0056b3"
-                                           VerticalAlignment="Center"/>
-
-                                <TextBlock Grid.Column="1"
-                                           Text="{Binding Name}"
-                                           FontSize="16"
-                                           FontWeight="Medium"
-                                           Foreground="#212529"
-                                           VerticalAlignment="Center"/>
-
-                                <TextBlock Grid.Column="2"
-                                           Text="{Binding AvailabilityStatus}"
-                                           Foreground="#6C757D"
-                                           VerticalAlignment="Center"/>
-
-                            </Grid>
-
-                        </Border>
-
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-
-            </ListBox>
-
-        </Border>
-
-        <!-- Action Panel -->
-        <StackPanel Grid.Row="2"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Margin="0,20,0,0">
-
-            <Button Content="Borrow Selected Equipment"
-                    Command="{Binding BorrowSelectedEquipmentCommand}"
-                    Background="#0056b3"
-                    Foreground="White"
-                    FontWeight="Medium"
-                    Padding="20,10"
-                    CornerRadius="4"/>
+            <DatePicker SelectedDate="{Binding SelectedExpectedReturnDate}"
+                        HorizontalAlignment="Stretch"/>
 
         </StackPanel>
 
     </Grid>
 
-</UserControl>
+    <!-- Equipment List -->
+    <Border Grid.Row="2"
+            Background="{StaticResource AppSidebarBrush}"
+            BorderBrush="{StaticResource AppBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
 
+        <ListBox ItemsSource="{Binding Equipment}"
+                 SelectedItem="{Binding SelectedEquipment}"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 Margin="10">
+
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="domain:Equipment">
+
+                    <Border Classes="itemCard"
+                            Padding="15"
+                            Margin="0,0,0,8"
+                            Background="White"
+                            BorderBrush="{StaticResource AppBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="6">
+
+                        <Grid ColumnDefinitions="80, *, Auto">
+
+                            <TextBlock Grid.Column="0"
+                                       Text="{Binding Id, StringFormat='#{0}'}"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource AppPrimaryBrush}"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding Name}"
+                                       FontSize="16"
+                                       FontWeight="Medium"
+                                       Foreground="{StaticResource AppTextPrimaryBrush}"
+                                       VerticalAlignment="Center"/>
+
+                            <Border Grid.Column="2"
+                                    Classes="availabilityBadge"
+                                    Classes.available="{Binding IsAvailable}"
+                                    Padding="10,4"
+                                    CornerRadius="4"
+                                    VerticalAlignment="Center">
+
+                                <TextBlock Text="{Binding AvailabilityStatus}"
+                                           Classes="availabilityBadgeText"
+                                           FontWeight="Medium"/>
+
+                            </Border>
+
+                        </Grid>
+
+                    </Border>
+
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+
+        </ListBox>
+
+    </Border>
+
+    <!-- Action Area -->
+    <StackPanel Grid.Row="3"
+                Spacing="8"
+                Margin="0,20,0,0">
+
+        <TextBlock Text="{Binding Message}"
+                   Classes="message"
+                   Classes.error="{Binding IsError}"
+                   TextWrapping="Wrap"/>
+
+        <!-- Existing working button preserved -->
+        <Button Content="Borrow Selected Equipment"
+                Command="{Binding BorrowSelectedEquipmentCommand}"
+                Classes="primary"
+                HorizontalAlignment="Right"/>
+
+    </StackPanel>
+
+</Grid>
+
+
+</UserControl>

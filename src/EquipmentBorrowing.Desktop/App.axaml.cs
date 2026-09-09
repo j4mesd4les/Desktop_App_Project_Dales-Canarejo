@@ -35,14 +35,32 @@ public partial class App : Avalonia.Application
 
             var borrowings = new InMemoryBorrowingRepository();
 
-            // Wire up the application service
-            var borrowService = new BorrowEquipmentService(students, equipmentRepository, borrowings);
+            var borrowService = new BorrowEquipmentService(
+                students,
+                equipmentRepository,
+                borrowings);
 
-            // Pass dependencies to the ViewModel
-            var equipmentViewModel = new EquipmentViewModel(equipmentRepository, borrowService);
+            var returnService = new ReturnEquipmentService(
+                equipmentRepository,
+                borrowings);
+
+            var equipmentViewModel = new EquipmentViewModel(
+                equipmentRepository,
+                borrowService,
+                students);
+
             await equipmentViewModel.LoadEquipmentAsync();
+            await equipmentViewModel.LoadStudentsAsync();
 
-            var mainViewModel = new MainViewModel(equipmentViewModel);
+            var borrowingsViewModel = new BorrowingsViewModel(
+                borrowings,
+                returnService);
+
+            await borrowingsViewModel.LoadBorrowingsAsync();
+
+            var mainViewModel = new MainViewModel(
+                equipmentViewModel,
+                borrowingsViewModel);
 
             desktop.MainWindow = new MainWindow
             {

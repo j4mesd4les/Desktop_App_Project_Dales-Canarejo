@@ -24,3 +24,13 @@ public class BorrowingLimitExceededError : Exception
 {
     public BorrowingLimitExceededError(string message) : base(message) { }
 }
+
+public class BorrowingNotFoundError : Exception
+{
+    public BorrowingNotFoundError(string message) : base(message) { }
+}
+
+public class BorrowingAlreadyReturnedError : Exception
+{
+    public BorrowingAlreadyReturnedError(string message) : base(message) { }
+}

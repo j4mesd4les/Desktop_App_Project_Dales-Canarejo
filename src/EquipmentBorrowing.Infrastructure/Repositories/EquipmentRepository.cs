@@ -87,4 +87,11 @@ public class InMemoryBorrowingRepository : IBorrowingRepository
         _borrowings.TryGetValue(borrowingId, out var borrowing);
         return Task.FromResult(borrowing);
     }
+
+    public Task<IReadOnlyList<Borrowing>> GetAllAsync(
+        CancellationToken cancellationToken = default)
+    {
+        IReadOnlyList<Borrowing> borrowings = _borrowings.Values.ToList();
+        return Task.FromResult(borrowings);
+    }
 }

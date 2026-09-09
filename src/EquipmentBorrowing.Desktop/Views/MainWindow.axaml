@@ -9,14 +9,17 @@
         Title="Campus Equipment Borrowing System"
         Width="1000"
         Height="650"
+        MinWidth="800"
+        MinHeight="500"
+        Background="White"
         WindowStartupLocation="CenterScreen">
 
     <Grid ColumnDefinitions="250, *">
 
         <!-- Sidebar Navigation -->
         <Border Grid.Column="0"
-                Background="#F8F9FA"
-                BorderBrush="#DEE2E6"
+                Background="{StaticResource AppSidebarBrush}"
+                BorderBrush="{StaticResource AppBorderBrush}"
                 BorderThickness="0,0,1,0"
                 Padding="20">
 
@@ -27,32 +30,29 @@
                            FontSize="20"
                            FontWeight="Bold"
                            TextWrapping="Wrap"
-                           Foreground="#212529"
+                           Foreground="{StaticResource AppTextPrimaryBrush}"
                            Margin="0,0,0,15"/>
 
                 <!-- Navigation Buttons -->
                 <Button Content="Equipment"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Left"
-                        Padding="15,10"
-                        CornerRadius="4"/>
+                        Command="{Binding ShowEquipmentCommand}"
+                        Classes="nav"
+                        Classes.active="{Binding IsEquipmentActive}"/>
 
                 <Button Content="Active Borrowings"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Left"
-                        Padding="15,10"
-                        CornerRadius="4"/>
+                        Command="{Binding ShowBorrowingsCommand}"
+                        Classes="nav"
+                        Classes.active="{Binding IsBorrowingsActive}"/>
 
             </StackPanel>
         </Border>
 
         <!-- Main Content Area -->
         <Border Grid.Column="1"
-                Background="#FFFFFF"
+                Background="White"
                 Padding="40">
 
-            <!-- Equipment View -->
-            <ContentControl Content="{Binding EquipmentView}" />
+            <ContentControl Content="{Binding CurrentView}" />
 
         </Border>
 

@@ -4,7 +4,9 @@ namespace EquipmentBorrowing.Application.Interfaces;
 
 public interface IStudentRepository
 {
-    Task<Student?> GetByIdAsync(int studentId, CancellationToken cancellationToken = default);
+    Task<Student?> GetByIdAsync(
+        int studentId,
+        CancellationToken cancellationToken = default);
 }
 
 public interface IEquipmentRepository
@@ -20,9 +22,21 @@ public interface IEquipmentRepository
         Equipment equipment,
         CancellationToken cancellationToken = default);
 }
+
 public interface IBorrowingRepository
 {
-    Task AddAsync(Borrowing borrowing, CancellationToken cancellationToken = default);
-    Task<int> CountActiveForStudentAsync(int studentId, CancellationToken cancellationToken = default);
-    Task<Borrowing?> GetByIdAsync(int borrowingId, CancellationToken cancellationToken = default);
+    Task AddAsync(
+        Borrowing borrowing,
+        CancellationToken cancellationToken = default);
+
+    Task<int> CountActiveForStudentAsync(
+        int studentId,
+        CancellationToken cancellationToken = default);
+
+    Task<Borrowing?> GetByIdAsync(
+        int borrowingId,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<Borrowing>> GetAllAsync(
+        CancellationToken cancellationToken = default);
 }
