@@ -1,10 +1,12 @@
 ﻿using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using EquipmentBorrowing.Application.Interfaces;
 using EquipmentBorrowing.Application.Services;
 using EquipmentBorrowing.Desktop.ViewModels;
 using EquipmentBorrowing.Desktop.Views;
 using EquipmentBorrowing.Domain;
 using EquipmentBorrowing.Infrastructure.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 
 namespace EquipmentBorrowing.Desktop;
@@ -20,47 +22,45 @@ public partial class App : Avalonia.Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var students = new InMemoryStudentRepository(new Dictionary<int, Student>
-            {
-                { 1, new Student { Id = 1, Name = "Dodong" } }
-            });
+            var services = new ServiceCollection();
 
-            var equipmentRepository = new InMemoryEquipmentRepository(new Dictionary<int, Equipment>
-            {
-                { 1, new Equipment { Id = 1, Name = "HDMI Projector" } },
-                { 2, new Equipment { Id = 2, Name = "Laptop" } },
-                { 3, new Equipment { Id = 3, Name = "Extension Cord" } },
-                { 4, new Equipment { Id = 4, Name = "Speaker" } }
-            });
+            // Repositories
+            services.AddSingleton<IStudentRepository>(
+                new InMemoryStudentRepository(
+                    new Dictionary<int, Student>
+                    {
+                        { 1, new Student { Id = 1, Name = "Dodong" } }
+                    }));
 
-            var borrowings = new InMemoryBorrowingRepository();
+            services.AddSingleton<IEquipmentRepository>(
+                new InMemoryEquipmentRepository(
+                    new Dictionary<int, Equipment>
+                    {
+                        { 1, new Equipment { Id = 1, Name = "HDMI Projector" } },
+                        { 2, new Equipment { Id = 2, Name = "Laptop" } },
+                        { 3, new Equipment { Id = 3, Name = "Extension Cord" } },
+                        { 4, new Equipment { Id = 4, Name = "Speaker" } }
+                    }));
 
-            var borrowService = new BorrowEquipmentService(
-                students,
-                equipmentRepository,
-                borrowings);
+            services.AddSingleton<IBorrowingRepository>(
+                new InMemoryBorrowingRepository());
 
-            var returnService = new ReturnEquipmentService(
-                equipmentRepository,
-                borrowings);
+            // Application services
+            services.AddTransient<BorrowEquipmentService>();
+            services.AddTransient<ReturnEquipmentService>();
 
-            var equipmentViewModel = new EquipmentViewModel(
-                equipmentRepository,
-                borrowService,
-                students);
+            // ViewModels
+            services.AddTransient<EquipmentViewModel>();
+            services.AddTransient<BorrowingsViewModel>();
+            services.AddTransient<MainViewModel>();
 
-            await equipmentViewModel.LoadEquipmentAsync();
-            await equipmentViewModel.LoadStudentsAsync();
+            var serviceProvider = services.BuildServiceProvider();
 
-            var borrowingsViewModel = new BorrowingsViewModel(
-                borrowings,
-                returnService);
+            var mainViewModel = serviceProvider.GetRequiredService<MainViewModel>();
 
-            await borrowingsViewModel.LoadBorrowingsAsync();
-
-            var mainViewModel = new MainViewModel(
-                equipmentViewModel,
-                borrowingsViewModel);
+            await mainViewModel.EquipmentView.LoadEquipmentAsync();
+            await mainViewModel.EquipmentView.LoadStudentsAsync();
+            await mainViewModel.BorrowingsView.LoadBorrowingsAsync();
 
             desktop.MainWindow = new MainWindow
             {
@@ -71,3 +71,4 @@ public partial class App : Avalonia.Application
         base.OnFrameworkInitializationCompleted();
     }
 }
+
