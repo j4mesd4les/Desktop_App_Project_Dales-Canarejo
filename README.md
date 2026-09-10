@@ -1,14 +1,5 @@
 # Campus Equipment Borrowing System
 
-**1. Solution Structure**
-
-* **Domain**: Holds and manage the core models such as Student, Equipment, Borrowinng, BorrowingStatus. There is no logic outside of basic object properties.
-* **Application**: This holds the rules and workflow of the system and defines repository interfaces.
-* **Infrastructure**: It Holds the actual data of storage logic.
-* **Tests**: Can be utilized for demo purposes and any testing process.
-
-# Campus Equipment Borrowing System
-
 ## 1. Solution Structure
 
 * **Domain**: Holds your core models (`Student`, `Equipment`, `Borrowing`). No logic outside of basic object properties.
