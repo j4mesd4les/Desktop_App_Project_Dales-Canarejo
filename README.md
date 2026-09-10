@@ -50,7 +50,7 @@ Infrastructure Implementations Used: EquipmentRepository.cs
 
 ---
 
-# Part L – Desktop Application and Updated Architecture
+# ACT#2 – Desktop Application and Updated Architecture
 
 ## 6. Desktop Project
 
