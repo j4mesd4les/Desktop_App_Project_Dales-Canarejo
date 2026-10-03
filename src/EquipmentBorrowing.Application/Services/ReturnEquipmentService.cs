@@ -46,6 +46,12 @@ public class ReturnEquipmentService
         equipment.IsAvailable = true;
         await _equipment.SaveAsync(equipment, cancellationToken);
 
+        // Lab 3 fix: the borrowing was changed (Status = Returned, ReturnedOn
+        // set) but never saved. With in-memory storage that did not matter
+        // because the object was shared; with a database the change is lost
+        // unless it is saved, and the borrowing would stay Active forever.
+        await _borrowings.SaveAsync(borrowing, cancellationToken);
+
         return borrowing;
     }
 }

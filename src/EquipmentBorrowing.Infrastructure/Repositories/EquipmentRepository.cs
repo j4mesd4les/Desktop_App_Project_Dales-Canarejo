@@ -1,7 +1,13 @@
 ﻿using EquipmentBorrowing.Application.Interfaces;
+using EquipmentBorrowing.Application.Models;
 using EquipmentBorrowing.Domain;
 
 namespace EquipmentBorrowing.Infrastructure.Repositories;
+
+// These in-memory repositories are no longer used by the desktop app (it now
+// uses the Ef* repositories). They are kept because the Tests demo project
+// still runs against them, and because they show that the same interfaces can
+// be satisfied by a completely different storage mechanism.
 
 public class InMemoryStudentRepository : IStudentRepository
 {
@@ -19,6 +25,16 @@ public class InMemoryStudentRepository : IStudentRepository
         _students.TryGetValue(studentId, out var student);
         return Task.FromResult(student);
     }
+
+    public Task<IReadOnlyList<Student>> GetAllAsync(
+        CancellationToken cancellationToken = default)
+    {
+        IReadOnlyList<Student> students = _students.Values
+            .OrderBy(s => s.Name)
+            .ToList();
+
+        return Task.FromResult(students);
+    }
 }
 
 public class InMemoryEquipmentRepository : IEquipmentRepository
@@ -35,6 +51,16 @@ public class InMemoryEquipmentRepository : IEquipmentRepository
         CancellationToken cancellationToken = default)
     {
         IReadOnlyList<Equipment> equipment = _equipment.Values.ToList();
+        return Task.FromResult(equipment);
+    }
+
+    public Task<IReadOnlyList<Equipment>> GetAvailableAsync(
+        CancellationToken cancellationToken = default)
+    {
+        IReadOnlyList<Equipment> equipment = _equipment.Values
+            .Where(e => e.IsAvailable)
+            .ToList();
+
         return Task.FromResult(equipment);
     }
 
@@ -93,5 +119,31 @@ public class InMemoryBorrowingRepository : IBorrowingRepository
     {
         IReadOnlyList<Borrowing> borrowings = _borrowings.Values.ToList();
         return Task.FromResult(borrowings);
+    }
+
+    public Task SaveAsync(
+        Borrowing borrowing,
+        CancellationToken cancellationToken = default)
+    {
+        _borrowings[borrowing.Id] = borrowing;
+        return Task.CompletedTask;
+    }
+
+    public Task<IReadOnlyList<ActiveBorrowingDetails>> GetActiveWithDetailsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        // This repository only knows about borrowings, not about students or
+        // equipment, so it can only show ids. The EF repository does a real join.
+        IReadOnlyList<ActiveBorrowingDetails> details = _borrowings.Values
+            .Where(b => b.Status == BorrowingStatus.Active)
+            .Select(b => new ActiveBorrowingDetails(
+                b.Id,
+                $"Student #{b.StudentId}",
+                $"Equipment #{b.EquipmentId}",
+                b.BorrowedOn,
+                b.ExpectedReturnOn))
+            .ToList();
+
+        return Task.FromResult(details);
     }
 }
