@@ -448,14 +448,18 @@ borrow, an item that is not available).
 | Evidence | Screenshot |
 |---|---|
 | Tables in an SQLite viewer | `docs/screenshots/01-tables-in-viewer.png` |
-| Stored Students, Equipment and Borrowings data | `docs/screenshots/02-stored-data.png` |
+| Stored Students data | `docs/screenshots/02-students.png` |
+| Stored Equipment data | `docs/screenshots/02-equipment.png` |
+| Stored Borrowings data | `docs/screenshots/02-borrowings.png` |
 | Successful borrow | `docs/screenshots/03-borrow-success.png` |
 | Borrowing still there after restart | `docs/screenshots/04-after-restart.png` |
 | Successful return | `docs/screenshots/05-return-success.png` |
 | Successful `dotnet build` | `docs/screenshots/06-build-success.png` |
 
 ![Tables in the SQLite viewer](docs/screenshots/01-tables-in-viewer.png)
-![Stored data](docs/screenshots/02-stored-data.png)
+![Stored students](docs/screenshots/02-students.png)
+![Stored equipment](docs/screenshots/02-equipment.png)
+![Stored borrowings](docs/screenshots/02-borrowings.png)
 ![Successful borrow](docs/screenshots/03-borrow-success.png)
 ![Borrowing still exists after restart](docs/screenshots/04-after-restart.png)
 ![Successful return](docs/screenshots/05-return-success.png)
