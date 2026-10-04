@@ -112,3 +112,4 @@ desktop.ini
 *.user.config
 appsettings.Development.json
 appsettings.Local.json
+[Oo]bj/

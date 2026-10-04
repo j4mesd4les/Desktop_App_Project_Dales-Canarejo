@@ -1,13 +1,10 @@
 ﻿using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using EquipmentBorrowing.Application.Interfaces;
 using EquipmentBorrowing.Application.Services;
 using EquipmentBorrowing.Desktop.ViewModels;
 using EquipmentBorrowing.Desktop.Views;
-using EquipmentBorrowing.Domain;
-using EquipmentBorrowing.Infrastructure.Repositories;
+using EquipmentBorrowing.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
 
 namespace EquipmentBorrowing.Desktop;
 
@@ -24,26 +21,9 @@ public partial class App : Avalonia.Application
         {
             var services = new ServiceCollection();
 
-            // Repositories
-            services.AddSingleton<IStudentRepository>(
-                new InMemoryStudentRepository(
-                    new Dictionary<int, Student>
-                    {
-                        { 1, new Student { Id = 1, Name = "Dodong" } }
-                    }));
-
-            services.AddSingleton<IEquipmentRepository>(
-                new InMemoryEquipmentRepository(
-                    new Dictionary<int, Equipment>
-                    {
-                        { 1, new Equipment { Id = 1, Name = "HDMI Projector" } },
-                        { 2, new Equipment { Id = 2, Name = "Laptop" } },
-                        { 3, new Equipment { Id = 3, Name = "Extension Cord" } },
-                        { 4, new Equipment { Id = 4, Name = "Speaker" } }
-                    }));
-
-            services.AddSingleton<IBorrowingRepository>(
-                new InMemoryBorrowingRepository());
+            // Repositories: now backed by SQLite through EF Core instead of
+            // in-memory dictionaries. Registered in one place (Infrastructure).
+            services.AddPersistence();
 
             // Application services
             services.AddTransient<BorrowEquipmentService>();
@@ -55,6 +35,10 @@ public partial class App : Avalonia.Application
             services.AddTransient<MainViewModel>();
 
             var serviceProvider = services.BuildServiceProvider();
+
+            // Creates the database on first run and applies any new
+            // migrations. Existing data is never wiped.
+            await serviceProvider.InitializeDatabaseAsync();
 
             var mainViewModel = serviceProvider.GetRequiredService<MainViewModel>();
 
@@ -71,4 +55,3 @@ public partial class App : Avalonia.Application
         base.OnFrameworkInitializationCompleted();
     }
 }
-

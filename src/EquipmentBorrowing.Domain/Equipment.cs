@@ -6,6 +6,8 @@ public class Equipment
 
     public string Name { get; set; } = string.Empty;
 
+    public string Type { get; set; } = "General";
+
     public bool IsAvailable { get; set; } = true;
 
     public string AvailabilityStatus =>

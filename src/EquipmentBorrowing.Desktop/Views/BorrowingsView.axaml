@@ -3,48 +3,48 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:EquipmentBorrowing.Desktop.ViewModels"
-             xmlns:domain="using:EquipmentBorrowing.Domain"
+             xmlns:models="using:EquipmentBorrowing.Application.Models"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
              x:Class="EquipmentBorrowing.Desktop.Views.BorrowingsView"
              x:DataType="vm:BorrowingsViewModel">
 
-    <Grid RowDefinitions="Auto, *, Auto">
+	<Grid RowDefinitions="Auto, *, Auto">
 
-        <!-- Header -->
-        <StackPanel Grid.Row="0"
+		<!-- Header -->
+		<StackPanel Grid.Row="0"
                     Spacing="5"
                     Margin="0,0,0,20">
 
-            <TextBlock Text="Active Borrowings"
+			<TextBlock Text="Active Borrowings"
                        FontSize="28"
                        FontWeight="SemiBold"
                        Foreground="{StaticResource AppTextPrimaryBrush}"/>
 
-            <TextBlock Text="View equipment currently borrowed by students."
+			<TextBlock Text="View equipment currently borrowed by students."
                        FontSize="14"
                        Foreground="{StaticResource AppTextSecondaryBrush}"/>
 
-        </StackPanel>
+		</StackPanel>
 
-        <!-- Borrowing List -->
-        <Border Grid.Row="1"
+		<!-- Borrowing List -->
+		<Border Grid.Row="1"
                 Background="{StaticResource AppSidebarBrush}"
                 BorderBrush="{StaticResource AppBorderBrush}"
                 BorderThickness="1"
                 CornerRadius="8">
 
-            <ListBox ItemsSource="{Binding Borrowings}"
+			<ListBox ItemsSource="{Binding Borrowings}"
                      SelectedItem="{Binding SelectedBorrowing}"
                      Background="Transparent"
                      BorderThickness="0"
                      Margin="10">
 
-                <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="domain:Borrowing">
+				<ListBox.ItemTemplate>
+					<DataTemplate x:DataType="models:ActiveBorrowingDetails">
 
-                        <Border Classes="itemCard"
+						<Border Classes="itemCard"
                                 Padding="15"
                                 Margin="0,0,0,8"
                                 Background="White"
@@ -52,50 +52,50 @@
                                 BorderThickness="1"
                                 CornerRadius="6">
 
-                            <Grid ColumnDefinitions="80, *, 150">
+							<Grid ColumnDefinitions="80, *, 150">
 
-                                <TextBlock Grid.Column="0"
-                                           Text="{Binding Id, StringFormat='#{0}'}"
+								<TextBlock Grid.Column="0"
+                                           Text="{Binding BorrowingId, StringFormat='#{0}'}"
                                            FontWeight="Bold"
                                            Foreground="{StaticResource AppPrimaryBrush}"
                                            VerticalAlignment="Center"/>
 
-                                <StackPanel Grid.Column="1"
+								<StackPanel Grid.Column="1"
                                             Spacing="4">
 
-                                    <TextBlock Text="{Binding EquipmentId, StringFormat='Equipment ID: {0}'}"
+									<TextBlock Text="{Binding EquipmentName}"
                                                FontSize="16"
                                                FontWeight="Medium"
                                                Foreground="{StaticResource AppTextPrimaryBrush}"/>
 
-                                    <TextBlock Text="{Binding StudentId, StringFormat='Student ID: {0}'}"
+									<TextBlock Text="{Binding StudentName, StringFormat='Borrowed by: {0}'}"
                                                FontSize="14"
                                                Foreground="{StaticResource AppTextSecondaryBrush}"/>
 
-                                </StackPanel>
+								</StackPanel>
 
-                                <TextBlock Grid.Column="2"
+								<TextBlock Grid.Column="2"
                                            Text="{Binding ExpectedReturnOn, StringFormat='Due: {0:yyyy-MM-dd}'}"
                                            Foreground="{StaticResource AppTextSecondaryBrush}"
                                            VerticalAlignment="Center"/>
 
-                            </Grid>
+							</Grid>
 
-                        </Border>
+						</Border>
 
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
 
-            </ListBox>
+			</ListBox>
 
-        </Border>
+		</Border>
 
-        <!-- Actions and Message -->
-        <Grid Grid.Row="2"
+		<!-- Actions and Message -->
+		<Grid Grid.Row="2"
               ColumnDefinitions="*, Auto"
               Margin="0,20,0,0">
 
-            <TextBlock Grid.Column="0"
+			<TextBlock Grid.Column="0"
                        Text="{Binding Message}"
                        Classes="message"
                        Classes.error="{Binding IsError}"
@@ -103,14 +103,14 @@
                        TextWrapping="Wrap"
                        Margin="0,0,20,0"/>
 
-            <Button Grid.Column="1"
+			<Button Grid.Column="1"
                     Content="Return Selected Borrowing"
                     Command="{Binding ReturnSelectedBorrowingCommand}"
                     Classes="primary"/>
 
-        </Grid>
+		</Grid>
 
-    </Grid>
+	</Grid>
 
 </UserControl>
 

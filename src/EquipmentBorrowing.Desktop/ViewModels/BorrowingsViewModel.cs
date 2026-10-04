@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EquipmentBorrowing.Application.Interfaces;
+using EquipmentBorrowing.Application.Models;
 using EquipmentBorrowing.Application.Services;
 using EquipmentBorrowing.Domain;
 using System;
@@ -15,10 +16,10 @@ public partial class BorrowingsViewModel : ViewModelBase
     private readonly IBorrowingRepository _borrowingRepository;
     private readonly ReturnEquipmentService _returnService;
 
-    public ObservableCollection<Borrowing> Borrowings { get; } = new();
+    public ObservableCollection<ActiveBorrowingDetails> Borrowings { get; } = new();
 
     [ObservableProperty]
-    private Borrowing? _selectedBorrowing;
+    private ActiveBorrowingDetails? _selectedBorrowing;
 
     [ObservableProperty]
     private string _message = string.Empty;
@@ -37,16 +38,15 @@ public partial class BorrowingsViewModel : ViewModelBase
 
     public async Task LoadBorrowingsAsync()
     {
-        var borrowings = await _borrowingRepository.GetAllAsync();
+        // The database finds the active borrowings and joins in the student
+        // and equipment names; the ViewModel just displays the result.
+        var borrowings = await _borrowingRepository.GetActiveWithDetailsAsync();
 
         Borrowings.Clear();
 
         foreach (var borrowing in borrowings)
         {
-            if (borrowing.Status == BorrowingStatus.Active)
-            {
-                Borrowings.Add(borrowing);
-            }
+            Borrowings.Add(borrowing);
         }
     }
 
@@ -62,9 +62,9 @@ public partial class BorrowingsViewModel : ViewModelBase
 
         try
         {
-            await _returnService.ReturnAsync(SelectedBorrowing.Id);
+            await _returnService.ReturnAsync(SelectedBorrowing.BorrowingId);
 
-            Message = $"Successfully returned borrowing #{SelectedBorrowing.Id}.";
+            Message = $"Successfully returned {SelectedBorrowing.EquipmentName} (borrowing #{SelectedBorrowing.BorrowingId}).";
             IsError = false;
 
             SelectedBorrowing = null;
