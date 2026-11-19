@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:EquipmentBorrowing.Desktop.ViewModels"
+             xmlns:domain="using:EquipmentBorrowing.Domain"
+             mc:Ignorable="d"
+             x:Class="EquipmentBorrowing.Desktop.Views.EquipmentManagementView"
+             x:DataType="vm:EquipmentManagementViewModel">
+  <Grid RowDefinitions="Auto, *, Auto" RowSpacing="14">
+    <StackPanel Grid.Row="0" Spacing="4">
+      <TextBlock Text="Equipment Management" FontSize="26" FontWeight="SemiBold"/>
+      <TextBlock Text="Register individual items and update their descriptive information." Foreground="#667085"/>
+    </StackPanel>
+    <Grid Grid.Row="1" ColumnDefinitions="*, 1.15*" ColumnSpacing="18">
+      <Border Grid.Column="0" Padding="12" BorderBrush="#D0D5DD" BorderThickness="1" CornerRadius="6">
+        <Grid RowDefinitions="Auto, *" RowSpacing="10">
+          <TextBlock Text="Registered equipment" FontWeight="SemiBold"/>
+          <ListBox Grid.Row="1" ItemsSource="{Binding Equipment}" SelectedItem="{Binding SelectedEquipment}">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="domain:Equipment">
+                <StackPanel Margin="4" Spacing="3">
+                  <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                  <TextBlock Text="{Binding EquipmentNumber}" Foreground="#667085"/>
+                  <TextBlock Text="{Binding AvailabilityStatus}" FontSize="12"/>
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Grid>
+      </Border>
+      <StackPanel Grid.Column="1" Spacing="10">
+        <TextBlock Text="Equipment details" FontWeight="SemiBold"/>
+        <TextBox PlaceholderText="Equipment identifier" Text="{Binding EquipmentNumber}"/>
+        <TextBox PlaceholderText="Name" Text="{Binding Name}"/>
+        <TextBox PlaceholderText="Type" Text="{Binding Type}"/>
+        <TextBox PlaceholderText="Description (optional)" Text="{Binding Description}" AcceptsReturn="True" MinHeight="70" TextWrapping="Wrap"/>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Content="New item" Command="{Binding NewEquipmentCommand}"/>
+          <Button Content="Register / Save details" Command="{Binding SaveEquipmentCommand}" Classes="primary"/>
+        </StackPanel>
+        <TextBlock Text="Availability is managed by borrowing and return workflows; it cannot be changed here." TextWrapping="Wrap" Foreground="#667085"/>
+        <TextBlock Text="Loading..." IsVisible="{Binding IsLoading}" Foreground="#667085"/>
+      </StackPanel>
+    </Grid>
+    <TextBlock Grid.Row="2" Text="{Binding Message}" Classes="message" Classes.error="{Binding IsError}" TextWrapping="Wrap"/>
+  </Grid>
+</UserControl>

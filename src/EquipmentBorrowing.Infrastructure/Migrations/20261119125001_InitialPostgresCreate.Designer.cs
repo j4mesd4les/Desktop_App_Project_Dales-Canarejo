@@ -5,58 +5,68 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace EquipmentBorrowing.Infrastructure.Migrations
 {
     [DbContext(typeof(EquipmentBorrowingDbContext))]
-    [Migration("20261003193826_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20261119125001_InitialPostgresCreate")]
+    partial class InitialPostgresCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.12");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "10.0.12")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("EquipmentBorrowing.Domain.Borrowing", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("BorrowedOn")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("date");
 
                     b.Property<int>("EquipmentId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ExpectedReturnOn")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("date");
 
                     b.Property<DateTime?>("ReturnedOn")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("date");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(20)");
 
                     b.Property<int>("StudentId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EquipmentId");
+                    b.HasIndex("EquipmentId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Borrowings_Equipment_Active")
+                        .HasFilter("\"Status\" = 'Active'");
 
                     b.HasIndex("StudentId", "Status");
 
                     b.ToTable("Borrowings", null, t =>
                         {
-                            t.HasCheckConstraint("CK_Borrowings_DueAfterBorrowed", "ExpectedReturnOn > BorrowedOn");
+                            t.HasCheckConstraint("CK_Borrowings_DueAfterBorrowed", "\"ExpectedReturnOn\" > \"BorrowedOn\"");
 
-                            t.HasCheckConstraint("CK_Borrowings_StatusMatchesReturnedOn", "(Status = 'Active' AND ReturnedOn IS NULL) OR (Status = 'Returned' AND ReturnedOn IS NOT NULL)");
+                            t.HasCheckConstraint("CK_Borrowings_StatusMatchesReturnedOn", "(\"Status\" = 'Active' AND \"ReturnedOn\" IS NULL) OR (\"Status\" = 'Returned' AND \"ReturnedOn\" IS NOT NULL)");
                         });
 
                     b.HasData(
@@ -112,24 +122,40 @@ namespace EquipmentBorrowing.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("EquipmentNumber")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<string>("EquipmentNumberNormalized")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<bool>("IsAvailable")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("EquipmentNumberNormalized")
                         .IsUnique();
 
                     b.HasIndex("Type");
@@ -140,6 +166,8 @@ namespace EquipmentBorrowing.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
+                            EquipmentNumber = "EQ-001",
+                            EquipmentNumberNormalized = "EQ-001",
                             IsAvailable = true,
                             Name = "HDMI Projector",
                             Type = "Audio Visual"
@@ -147,6 +175,8 @@ namespace EquipmentBorrowing.Infrastructure.Migrations
                         new
                         {
                             Id = 2,
+                            EquipmentNumber = "EQ-002",
+                            EquipmentNumberNormalized = "EQ-002",
                             IsAvailable = true,
                             Name = "Laptop",
                             Type = "Computer"
@@ -154,6 +184,8 @@ namespace EquipmentBorrowing.Infrastructure.Migrations
                         new
                         {
                             Id = 3,
+                            EquipmentNumber = "EQ-003",
+                            EquipmentNumberNormalized = "EQ-003",
                             IsAvailable = true,
                             Name = "Extension Cord",
                             Type = "Accessory"
@@ -161,6 +193,8 @@ namespace EquipmentBorrowing.Infrastructure.Migrations
                         new
                         {
                             Id = 4,
+                            EquipmentNumber = "EQ-004",
+                            EquipmentNumberNormalized = "EQ-004",
                             IsAvailable = true,
                             Name = "Speaker",
                             Type = "Audio Visual"
@@ -168,6 +202,8 @@ namespace EquipmentBorrowing.Infrastructure.Migrations
                         new
                         {
                             Id = 5,
+                            EquipmentNumber = "EQ-005",
+                            EquipmentNumberNormalized = "EQ-005",
                             IsAvailable = false,
                             Name = "Laptop 02",
                             Type = "Computer"
@@ -175,6 +211,8 @@ namespace EquipmentBorrowing.Infrastructure.Migrations
                         new
                         {
                             Id = 6,
+                            EquipmentNumber = "EQ-006",
+                            EquipmentNumberNormalized = "EQ-006",
                             IsAvailable = false,
                             Name = "Camera",
                             Type = "Photography"
@@ -182,6 +220,8 @@ namespace EquipmentBorrowing.Infrastructure.Migrations
                         new
                         {
                             Id = 7,
+                            EquipmentNumber = "EQ-007",
+                            EquipmentNumberNormalized = "EQ-007",
                             IsAvailable = false,
                             Name = "Tripod",
                             Type = "Photography"
@@ -189,6 +229,8 @@ namespace EquipmentBorrowing.Infrastructure.Migrations
                         new
                         {
                             Id = 8,
+                            EquipmentNumber = "EQ-008",
+                            EquipmentNumberNormalized = "EQ-008",
                             IsAvailable = false,
                             Name = "Microphone",
                             Type = "Audio Visual"
@@ -199,24 +241,35 @@ namespace EquipmentBorrowing.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Contact")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
 
                     b.Property<bool>("IsAllowedToBorrow")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("StudentNumber")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("StudentNumberNormalized")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentNumber")
+                    b.HasIndex("StudentNumberNormalized")
                         .IsUnique();
 
                     b.ToTable("Students", (string)null);
@@ -227,28 +280,32 @@ namespace EquipmentBorrowing.Infrastructure.Migrations
                             Id = 1,
                             IsAllowedToBorrow = true,
                             Name = "Dodong",
-                            StudentNumber = "2023-0001"
+                            StudentNumber = "2023-0001",
+                            StudentNumberNormalized = "2023-0001"
                         },
                         new
                         {
                             Id = 2,
                             IsAllowedToBorrow = true,
                             Name = "Ana Reyes",
-                            StudentNumber = "2023-0002"
+                            StudentNumber = "2023-0002",
+                            StudentNumberNormalized = "2023-0002"
                         },
                         new
                         {
                             Id = 3,
                             IsAllowedToBorrow = true,
                             Name = "Ben Santos",
-                            StudentNumber = "2023-0003"
+                            StudentNumber = "2023-0003",
+                            StudentNumberNormalized = "2023-0003"
                         },
                         new
                         {
                             Id = 4,
                             IsAllowedToBorrow = false,
                             Name = "Carla Mendoza",
-                            StudentNumber = "2023-0004"
+                            StudentNumber = "2023-0004",
+                            StudentNumberNormalized = "2023-0004"
                         });
                 });
 

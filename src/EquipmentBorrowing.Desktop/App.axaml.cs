@@ -21,17 +21,21 @@ public partial class App : Avalonia.Application
         {
             var services = new ServiceCollection();
 
-            // Repositories: now backed by SQLite through EF Core instead of
+            // Repositories: now backed by PostgreSQL through EF Core instead of
             // in-memory dictionaries. Registered in one place (Infrastructure).
             services.AddPersistence();
 
             // Application services
             services.AddTransient<BorrowEquipmentService>();
             services.AddTransient<ReturnEquipmentService>();
+            services.AddTransient<StudentManagementService>();
+            services.AddTransient<EquipmentManagementService>();
 
             // ViewModels
             services.AddTransient<EquipmentViewModel>();
             services.AddTransient<BorrowingsViewModel>();
+            services.AddTransient<StudentManagementViewModel>();
+            services.AddTransient<EquipmentManagementViewModel>();
             services.AddTransient<MainViewModel>();
 
             var serviceProvider = services.BuildServiceProvider();

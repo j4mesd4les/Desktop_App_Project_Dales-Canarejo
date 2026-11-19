@@ -13,23 +13,25 @@ public class BorrowingConfiguration : IEntityTypeConfiguration<Borrowing>
             // A borrowing must be due after the day it was borrowed.
             table.HasCheckConstraint(
                 "CK_Borrowings_DueAfterBorrowed",
-                "ExpectedReturnOn > BorrowedOn");
+                "\"ExpectedReturnOn\" > \"BorrowedOn\"");
 
             // Status and ReturnedOn must agree: an Active borrowing has no
             // return date, a Returned one always has one.
             table.HasCheckConstraint(
                 "CK_Borrowings_StatusMatchesReturnedOn",
-                "(Status = 'Active' AND ReturnedOn IS NULL) " +
-                "OR (Status = 'Returned' AND ReturnedOn IS NOT NULL)");
+                "(\"Status\" = 'Active' AND \"ReturnedOn\" IS NULL) " +
+                "OR (\"Status\" = 'Returned' AND \"ReturnedOn\" IS NOT NULL)");
         });
 
         builder.HasKey(b => b.Id);
 
-        builder.Property(b => b.BorrowedOn).IsRequired();
-        builder.Property(b => b.ExpectedReturnOn).IsRequired();
+        // These are calendar dates from the date picker, not UTC instants.
+        builder.Property(b => b.BorrowedOn).HasColumnType("date").IsRequired();
+        builder.Property(b => b.ExpectedReturnOn).HasColumnType("date").IsRequired();
 
         // Optional: null until the equipment is returned.
         builder.Property(b => b.ReturnedOn)
+            .HasColumnType("date")
             .IsRequired(false);
 
         // Stored as readable text ("Active" / "Returned") instead of 0 / 1,
@@ -62,6 +64,13 @@ public class BorrowingConfiguration : IEntityTypeConfiguration<Borrowing>
 
         // Speeds up borrowing history for one piece of equipment.
         builder.HasIndex(b => b.EquipmentId);
+
+        // A physical item can have only one active loan, even if two staff
+        // members try to issue it at nearly the same time.
+        builder.HasIndex(b => b.EquipmentId)
+            .HasDatabaseName("UX_Borrowings_Equipment_Active")
+            .HasFilter("\"Status\" = 'Active'")
+            .IsUnique();
 
         builder.HasData(SeedData.Borrowings);
     }

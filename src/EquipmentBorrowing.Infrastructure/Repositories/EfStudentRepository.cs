@@ -8,7 +8,7 @@ namespace EquipmentBorrowing.Infrastructure.Repositories;
 /// <summary>
 /// Database-backed student repository. It implements the same
 /// IStudentRepository interface as the in-memory version, so the application
-/// services do not know (or care) that SQLite is now behind it.
+/// services do not know (or care) that PostgreSQL is now behind it.
 ///
 /// Each method creates its own short-lived DbContext from the factory and
 /// disposes it when done. A desktop app keeps its ViewModels alive for the
@@ -50,5 +50,36 @@ public class EfStudentRepository : IStudentRepository
             .AsNoTracking()
             .OrderBy(s => s.Name)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<bool> IdentifierExistsAsync(
+        string normalizedStudentNumber,
+        int? exceptStudentId = null,
+        CancellationToken cancellationToken = default)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        return await context.Students.AnyAsync(
+            s => s.StudentNumberNormalized == normalizedStudentNumber &&
+                 (!exceptStudentId.HasValue || s.Id != exceptStudentId.Value),
+            cancellationToken);
+    }
+
+    public async Task AddAsync(Student student, CancellationToken cancellationToken = default)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        context.Students.Add(student);
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task SaveAsync(Student student, CancellationToken cancellationToken = default)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        var existing = await context.Students.FirstOrDefaultAsync(
+            s => s.Id == student.Id, cancellationToken);
+        if (existing is null)
+            throw new InvalidOperationException("The selected student no longer exists.");
+
+        context.Entry(existing).CurrentValues.SetValues(student);
+        await context.SaveChangesAsync(cancellationToken);
     }
 }

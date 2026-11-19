@@ -55,7 +55,10 @@
 
 					<ComboBox.ItemTemplate>
 						<DataTemplate x:DataType="domain:Student">
-							<TextBlock Text="{Binding Name}"/>
+							<StackPanel Spacing="2">
+								<TextBlock Text="{Binding Name}"/>
+								<TextBlock Text="{Binding StudentNumber}" FontSize="12" Foreground="#667085"/>
+							</StackPanel>
 						</DataTemplate>
 					</ComboBox.ItemTemplate>
 
@@ -106,7 +109,7 @@
 							<Grid ColumnDefinitions="80, *, Auto">
 
 								<TextBlock Grid.Column="0"
-										   Text="{Binding Id, StringFormat='#{0}'}"
+										   Text="{Binding EquipmentNumber}"
 										   FontWeight="Bold"
 										   Foreground="{StaticResource AppPrimaryBrush}"
 										   VerticalAlignment="Center"/>

@@ -34,3 +34,8 @@ public class BorrowingAlreadyReturnedError : Exception
 {
     public BorrowingAlreadyReturnedError(string message) : base(message) { }
 }
+
+public class DuplicateIdentifierError : Exception
+{
+    public DuplicateIdentifierError(string message) : base(message) { }
+}

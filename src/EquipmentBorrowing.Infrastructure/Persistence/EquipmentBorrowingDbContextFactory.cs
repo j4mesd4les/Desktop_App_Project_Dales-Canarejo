@@ -14,7 +14,7 @@ public class EquipmentBorrowingDbContextFactory
     public EquipmentBorrowingDbContext CreateDbContext(string[] args)
     {
         var options = new DbContextOptionsBuilder<EquipmentBorrowingDbContext>()
-            .UseSqlite(DatabaseLocation.ConnectionString)
+            .UseNpgsql(DatabaseLocation.ConnectionString)
             .Options;
 
         return new EquipmentBorrowingDbContext(options);

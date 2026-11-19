@@ -13,6 +13,15 @@ public interface IStudentRepository
     // not just the one hard-coded student.
     Task<IReadOnlyList<Student>> GetAllAsync(
         CancellationToken cancellationToken = default);
+
+    Task<bool> IdentifierExistsAsync(
+        string normalizedStudentNumber,
+        int? exceptStudentId = null,
+        CancellationToken cancellationToken = default);
+
+    Task AddAsync(Student student, CancellationToken cancellationToken = default);
+
+    Task SaveAsync(Student student, CancellationToken cancellationToken = default);
 }
 
 public interface IEquipmentRepository
@@ -31,6 +40,13 @@ public interface IEquipmentRepository
     Task SaveAsync(
         Equipment equipment,
         CancellationToken cancellationToken = default);
+
+    Task<bool> IdentifierExistsAsync(
+        string normalizedEquipmentNumber,
+        int? exceptEquipmentId = null,
+        CancellationToken cancellationToken = default);
+
+    Task AddAsync(Equipment equipment, CancellationToken cancellationToken = default);
 }
 
 public interface IBorrowingRepository

@@ -9,7 +9,7 @@ namespace EquipmentBorrowing.Infrastructure.Persistence;
 /// <summary>
 /// The single place where the database is wired into the app. The Desktop
 /// project calls AddPersistence() and InitializeDatabaseAsync() and never
-/// mentions SQLite, EF Core or the DbContext itself.
+/// configures the provider or uses the DbContext itself.
 /// </summary>
 public static class PersistenceServiceCollectionExtensions
 {
@@ -20,7 +20,7 @@ public static class PersistenceServiceCollectionExtensions
         // ViewModels live for the whole session.
         services.AddDbContextFactory<EquipmentBorrowingDbContext>(options =>
         {
-            options.UseSqlite(DatabaseLocation.ConnectionString);
+            options.UseNpgsql(DatabaseLocation.ConnectionString);
 
 #if DEBUG
             // While debugging, print every SQL command EF Core runs to the

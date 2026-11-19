@@ -35,6 +35,27 @@ public class InMemoryStudentRepository : IStudentRepository
 
         return Task.FromResult(students);
     }
+
+    public Task<bool> IdentifierExistsAsync(
+        string normalizedStudentNumber,
+        int? exceptStudentId = null,
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult(_students.Values.Any(s =>
+            s.StudentNumberNormalized == normalizedStudentNumber &&
+            (!exceptStudentId.HasValue || s.Id != exceptStudentId.Value)));
+
+    public Task AddAsync(Student student, CancellationToken cancellationToken = default)
+    {
+        student.Id = _students.Count == 0 ? 1 : _students.Keys.Max() + 1;
+        _students.Add(student.Id, student);
+        return Task.CompletedTask;
+    }
+
+    public Task SaveAsync(Student student, CancellationToken cancellationToken = default)
+    {
+        _students[student.Id] = student;
+        return Task.CompletedTask;
+    }
 }
 
 public class InMemoryEquipmentRepository : IEquipmentRepository
@@ -77,6 +98,21 @@ public class InMemoryEquipmentRepository : IEquipmentRepository
         CancellationToken cancellationToken = default)
     {
         _equipment[equipment.Id] = equipment;
+        return Task.CompletedTask;
+    }
+
+    public Task<bool> IdentifierExistsAsync(
+        string normalizedEquipmentNumber,
+        int? exceptEquipmentId = null,
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult(_equipment.Values.Any(e =>
+            e.EquipmentNumberNormalized == normalizedEquipmentNumber &&
+            (!exceptEquipmentId.HasValue || e.Id != exceptEquipmentId.Value)));
+
+    public Task AddAsync(Equipment equipment, CancellationToken cancellationToken = default)
+    {
+        equipment.Id = _equipment.Count == 0 ? 1 : _equipment.Keys.Max() + 1;
+        _equipment.Add(equipment.Id, equipment);
         return Task.CompletedTask;
     }
 }

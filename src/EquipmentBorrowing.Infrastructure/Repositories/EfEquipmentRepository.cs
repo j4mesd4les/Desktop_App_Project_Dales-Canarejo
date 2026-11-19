@@ -90,4 +90,23 @@ public class EfEquipmentRepository : IEquipmentRepository
 
         await context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<bool> IdentifierExistsAsync(
+        string normalizedEquipmentNumber,
+        int? exceptEquipmentId = null,
+        CancellationToken cancellationToken = default)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        return await context.Equipment.AnyAsync(
+            e => e.EquipmentNumberNormalized == normalizedEquipmentNumber &&
+                 (!exceptEquipmentId.HasValue || e.Id != exceptEquipmentId.Value),
+            cancellationToken);
+    }
+
+    public async Task AddAsync(Equipment equipment, CancellationToken cancellationToken = default)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        context.Equipment.Add(equipment);
+        await context.SaveChangesAsync(cancellationToken);
+    }
 }

@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:EquipmentBorrowing.Desktop.ViewModels"
+             xmlns:domain="using:EquipmentBorrowing.Domain"
+             mc:Ignorable="d"
+             x:Class="EquipmentBorrowing.Desktop.Views.StudentManagementView"
+             x:DataType="vm:StudentManagementViewModel">
+  <Grid RowDefinitions="Auto, *, Auto" RowSpacing="14">
+    <StackPanel Grid.Row="0" Spacing="4">
+      <TextBlock Text="Student Management" FontSize="26" FontWeight="SemiBold"/>
+      <TextBlock Text="Register students, update their details, and manage borrowing eligibility." Foreground="#667085"/>
+    </StackPanel>
+    <Grid Grid.Row="1" ColumnDefinitions="*, 1.15*" ColumnSpacing="18">
+      <Border Grid.Column="0" Padding="12" BorderBrush="#D0D5DD" BorderThickness="1" CornerRadius="6">
+        <Grid RowDefinitions="Auto, *" RowSpacing="10">
+          <TextBlock Text="Registered students" FontWeight="SemiBold"/>
+          <ListBox Grid.Row="1" ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedStudent}">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="domain:Student">
+                <StackPanel Margin="4" Spacing="3">
+                  <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                  <TextBlock Text="{Binding StudentNumber}" Foreground="#667085"/>
+                  <TextBlock Text="{Binding IsAllowedToBorrow, StringFormat='Eligible to borrow: {0}'}" FontSize="12"/>
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Grid>
+      </Border>
+      <StackPanel Grid.Column="1" Spacing="10">
+        <TextBlock Text="Student details" FontWeight="SemiBold"/>
+        <TextBox PlaceholderText="Institutional number" Text="{Binding StudentNumber}"/>
+        <TextBox PlaceholderText="Full name" Text="{Binding Name}"/>
+        <TextBox PlaceholderText="Contact (optional)" Text="{Binding Contact}"/>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Content="New student" Command="{Binding NewStudentCommand}"/>
+          <Button Content="Register / Save details" Command="{Binding SaveStudentCommand}" Classes="primary"/>
+        </StackPanel>
+        <Separator/>
+        <TextBlock Text="Borrowing eligibility" FontWeight="SemiBold"/>
+        <CheckBox Content="Student may borrow new items" IsChecked="{Binding EligibilityAllowed}"/>
+        <Button Content="Save eligibility" Command="{Binding SaveEligibilityCommand}" HorizontalAlignment="Left"/>
+        <TextBlock Text="An eligibility change does not cancel active borrowings. Existing items can still be returned." TextWrapping="Wrap" Foreground="#667085"/>
+        <TextBlock Text="Loading..." IsVisible="{Binding IsLoading}" Foreground="#667085"/>
+      </StackPanel>
+    </Grid>
+    <TextBlock Grid.Row="2" Text="{Binding Message}" Classes="message" Classes.error="{Binding IsError}" TextWrapping="Wrap"/>
+  </Grid>
+</UserControl>

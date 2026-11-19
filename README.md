@@ -1,11 +1,52 @@
 # Campus Equipment Borrowing System
 
+## Laboratory Activity 4 — current partial implementation
+
+This branch covers UC-12–16 (student registration, student information updates, eligibility changes, equipment registration, and equipment information updates). It also moves the application's EF Core provider to PostgreSQL. The remaining Lab 4 use cases and evidence are still in progress.
+
+### Setup for the current PostgreSQL version
+
+Prerequisites: .NET 10 SDK and a local PostgreSQL server/database. Install the EF Core command-line tool once:
+
+```powershell
+dotnet tool install --global dotnet-ef --version 10.0.12
+```
+
+Set a local connection string in the shell used to run the app. Replace the example password with your own local PostgreSQL password; do not commit it:
+
+```powershell
+$env:EQUIPMENTBORROWING_CONNECTION_STRING = "Host=localhost;Port=5432;Database=equipment_borrowing;Username=postgres;Password=your-local-password"
+```
+
+Create the `equipment_borrowing` database in PostgreSQL, then run the migration and app from the repository root:
+
+```powershell
+dotnet ef database update --project src/EquipmentBorrowing.Infrastructure --startup-project src/EquipmentBorrowing.Infrastructure
+dotnet run --project src/EquipmentBorrowing.Desktop
+```
+
+The migration builds a clean PostgreSQL schema and inserts the sample records once. The Lab 2–3 SQLite file is not migrated. At startup the desktop app also applies pending migrations without replacing existing PostgreSQL data.
+
+Student and equipment numbers are trimmed and normalized to uppercase for uniqueness checks. New students default to eligible; new equipment defaults to available. Updates change descriptive fields only, so eligibility is changed through its own action and an equipment item's availability remains controlled by borrowing and return workflows. Borrowing history is kept; there is no delete action.
+
+### Current slice status
+
+| Use cases | Status in this branch |
+|---|---|
+| UC-12–14 | Student registration, details, contact, and eligibility workflows added. |
+| UC-15–16 | Equipment registration and descriptive update workflows added. |
+| UC-01–05 | Existing Lab 3 workflows retained; PostgreSQL schema includes the existing records and rules. |
+| UC-06–09 | Deferred to later work. |
+
+The use-case count for this slice is five of fourteen required cases, about one third of the functional scope. It does not complete the full Lab 4 submission, diagram, fourteen-case traceability matrix, or integration/restart evidence.
+
 ## 1. Solution Structure
 
 * **Domain**: Holds your core models (`Student`, `Equipment`, `Borrowing`). No logic outside of basic object properties.
 * **Application**: Holds the rules and workflow (`BorrowEquipmentService`) and defines repository interfaces.
-* **Infrastructure**: Holds actual data storage logic (currently `InMemory` repositories).
-* **Tests**: The runnable entry point that acts as a demo to execute test cases.
+* **Infrastructure**: Holds the PostgreSQL EF Core context, migrations, and repositories. In-memory repositories remain for the earlier demonstration program.
+* **Desktop**: The Avalonia application and MVVM screens.
+* **Tests**: The earlier runnable demo and checks.
 
 ---
 
@@ -242,7 +283,7 @@ Two properties were added to the domain for this activity: `Student.StudentNumbe
 
 ---
 
-## 12. SQLite and EF Core
+## 12. Labs 2–3: SQLite and EF Core (historical notes)
 
 Two packages were added to **`EquipmentBorrowing.Infrastructure` only**:
 

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace EquipmentBorrowing.Infrastructure.Persistence;
 
 /// <summary>
-/// The application's gateway to the SQLite database. It knows which entities
+/// The application's gateway to the PostgreSQL database. It knows which entities
 /// exist (the DbSets), how they map to tables (the configurations), and it
 /// tracks changes until SaveChangesAsync writes them to the database.
 /// Only the Infrastructure layer uses it; Views, ViewModels and Application

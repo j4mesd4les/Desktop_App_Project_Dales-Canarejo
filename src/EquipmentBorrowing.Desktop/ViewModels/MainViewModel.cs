@@ -13,6 +13,10 @@ public partial class MainViewModel : ViewModelBase
 
     public BorrowingsViewModel BorrowingsView { get; }
 
+    public StudentManagementViewModel StudentsView { get; }
+
+    public EquipmentManagementViewModel EquipmentManagementView { get; }
+
     [ObservableProperty]
     private ViewModelBase _currentView;
 
@@ -21,12 +25,20 @@ public partial class MainViewModel : ViewModelBase
 
     public bool IsBorrowingsActive => CurrentView == BorrowingsView;
 
+    public bool IsStudentsActive => CurrentView == StudentsView;
+
+    public bool IsEquipmentManagementActive => CurrentView == EquipmentManagementView;
+
     public MainViewModel(
         EquipmentViewModel equipmentViewModel,
-        BorrowingsViewModel borrowingsViewModel)
+        BorrowingsViewModel borrowingsViewModel,
+        StudentManagementViewModel studentsViewModel,
+        EquipmentManagementViewModel equipmentManagementViewModel)
     {
         EquipmentView = equipmentViewModel;
         BorrowingsView = borrowingsViewModel;
+        StudentsView = studentsViewModel;
+        EquipmentManagementView = equipmentManagementViewModel;
 
         _currentView = EquipmentView;
     }
@@ -36,6 +48,8 @@ public partial class MainViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(IsEquipmentActive));
         OnPropertyChanged(nameof(IsBorrowingsActive));
+        OnPropertyChanged(nameof(IsStudentsActive));
+        OnPropertyChanged(nameof(IsEquipmentManagementActive));
     }
 
     [RelayCommand]
@@ -52,6 +66,20 @@ public partial class MainViewModel : ViewModelBase
         await BorrowingsView.LoadBorrowingsAsync();
 
         CurrentView = BorrowingsView;
+    }
+
+    [RelayCommand]
+    private async Task ShowStudentsAsync()
+    {
+        CurrentView = StudentsView;
+        await StudentsView.LoadAsync();
+    }
+
+    [RelayCommand]
+    private async Task ShowEquipmentManagementAsync()
+    {
+        CurrentView = EquipmentManagementView;
+        await EquipmentManagementView.LoadAsync();
     }
 }
 

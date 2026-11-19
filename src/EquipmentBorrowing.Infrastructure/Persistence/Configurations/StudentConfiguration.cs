@@ -18,12 +18,19 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
             .IsRequired()
             .HasMaxLength(20);
 
-        builder.HasIndex(s => s.StudentNumber)
+        builder.Property(s => s.StudentNumberNormalized)
+            .IsRequired()
+            .HasMaxLength(20);
+
+        builder.HasIndex(s => s.StudentNumberNormalized)
             .IsUnique();
 
         builder.Property(s => s.Name)
             .IsRequired()
             .HasMaxLength(100);
+
+        builder.Property(s => s.Contact)
+            .HasMaxLength(120);
 
         builder.Property(s => s.IsAllowedToBorrow)
             .IsRequired();

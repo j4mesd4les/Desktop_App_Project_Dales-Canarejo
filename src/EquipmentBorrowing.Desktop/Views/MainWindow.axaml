@@ -44,6 +44,16 @@
                         Classes="nav"
                         Classes.active="{Binding IsBorrowingsActive}"/>
 
+                <Button Content="Student Management"
+                        Command="{Binding ShowStudentsCommand}"
+                        Classes="nav"
+                        Classes.active="{Binding IsStudentsActive}"/>
+
+                <Button Content="Equipment Management"
+                        Command="{Binding ShowEquipmentManagementCommand}"
+                        Classes="nav"
+                        Classes.active="{Binding IsEquipmentManagementActive}"/>
+
             </StackPanel>
         </Border>
 
