@@ -78,4 +78,19 @@ public interface IBorrowingRepository
     // student and equipment names, for the Active Borrowings page.
     Task<IReadOnlyList<ActiveBorrowingDetails>> GetActiveWithDetailsAsync(
         CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<BorrowingHistoryRecord>> GetHistoryAsync(
+        int? studentId = null, int? equipmentId = null,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<BorrowingHistoryRecord>> SearchAsync(
+        string? text, BorrowingStatusFilter status, BorrowingSortField sortField,
+        bool descending, CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<Borrowing>> CheckoutAtomicallyAsync(
+        int studentId, IReadOnlyList<int> equipmentIds, DateTime dueDate,
+        CancellationToken cancellationToken = default);
+
+    Task<Borrowing> ReturnAtomicallyAsync(
+        int borrowingId, DateTime returnedOn, CancellationToken cancellationToken = default);
 }

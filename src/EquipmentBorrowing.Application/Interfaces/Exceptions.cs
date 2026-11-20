@@ -39,3 +39,8 @@ public class DuplicateIdentifierError : Exception
 {
     public DuplicateIdentifierError(string message) : base(message) { }
 }
+
+public class CommitOutcomeUnknownError : Exception
+{
+    public CommitOutcomeUnknownError(string message, Exception innerException) : base(message, innerException) { }
+}
