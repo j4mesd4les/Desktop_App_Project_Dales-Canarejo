@@ -23,6 +23,8 @@ flowchart LR
 
 ## Required suite summary
 
+The same standard fields apply to every required case below: **Scope** is the named catalog, borrowing, history, search, student, or equipment area; **Level** is User Goal; **Primary Actor** is Laboratory Staff / Equipment Custodian; **Stakeholders** are staff, who need understandable accurate work, and students, whose records and history must stay correct. **Failure Guarantee** for reads is no data changes; for writes a rejection/known failure leaves existing data unchanged, while an unknown commit follows BR-18. **Special Requirements** are PostgreSQL persistence, asynchronous related-data loading where applicable, and the View → ViewModel → Application → repository → Infrastructure separation. **Includes / Extends**: none required. **Open Issues**: none. Each row supplies the trigger, precondition, success guarantee, main scenario, rules and acceptance outcome; the common alternative and exception paths follow the table.
+
 | ID / goal | Actor interaction and main branch | Rules and acceptance outcome |
 |---|---|---|
 | UC-01 View Equipment Catalog | Open Equipment; display identified items and availability. | BR-05–07; all equipment is visible with its status. Empty catalog is explained. |
@@ -39,6 +41,21 @@ flowchart LR
 | UC-14 Change Student Borrowing Eligibility | Permit/restrict existing student. | BR-04; restriction blocks new loans but does not cancel current loans or block return. Repeating choice is harmless. |
 | UC-15 Register Equipment | Enter unique equipment number, name and optional description/type. | BR-05–06; new equipment starts available and has no loan. |
 | UC-16 Update Equipment Information | Locate item and edit number/name/description. | BR-05–07; stable item/history preserved; availability and dates are not edited here. |
+
+### Alternative and exception flows
+
+| Cases | Alternative flow | Exception flow |
+|---|---|---|
+| UC-01–02 | Empty catalog or no available items shows an empty result. | PostgreSQL read error shows an error and allows retry. |
+| UC-03 | Missing, ineligible, over-limit, unavailable or invalid-date request is rejected with a reason; staff can correct and resubmit. | Stale record/conflict refreshes the view; database error reports known failure or unknown outcome under BR-18. |
+| UC-04 | No active borrowings shows an empty state. | Read error is distinct from an empty list and can be retried. |
+| UC-05 | A repeated return is rejected without changing the returned record. | Missing/stale borrowing refreshes the list; write failure follows BR-18. |
+| UC-06 | Fewer than two items, duplicates, invalid date, ineligible student, limit violation or unavailable item is rejected for correction. | Conflict rejects the whole request; known write failure rolls back all changes; unknown commit is reported without retry. |
+| UC-07–08 | No records shows an empty history; selecting another student/item replaces the prior results. | Stale selection or database error is explained and can be retried/reselected. |
+| UC-09 | No matches shows a clear empty result; staff can change or clear combined criteria. | Database read error is not presented as an empty search. |
+| UC-12, UC-15 | Invalid required fields or duplicate normalized identifier is rejected for correction. | Persistence failure leaves no partially registered record and gives understandable feedback. |
+| UC-13, UC-16 | Blank optional contact/description clears that value; unchanged stable IDs and borrowing history remain. | Invalid/duplicate identifier or stale record is rejected; history is preserved. |
+| UC-14 | Repeating the current eligibility choice reports the current state without unintended changes. | Missing/stale student is rejected; active loans remain and may still be returned after restriction. |
 
 ## Traceability and current evidence
 
