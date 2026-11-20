@@ -13,7 +13,7 @@ var equipment = new InMemoryEquipmentRepository(new Dictionary<int, Equipment>
     { 10, new Equipment { Id = 10, Name = "HDMI Projector" } }
 });
 
-var borrowings = new InMemoryBorrowingRepository();
+var borrowings = new InMemoryBorrowingRepository(equipment);
 
 var borrowService = new BorrowEquipmentService(
     students,
@@ -77,5 +77,6 @@ catch (BorrowingNotFoundError ex)
     Console.WriteLine($"Rejected as expected: {ex.Message}");
 }
 
-Console.ReadKey();
+if (!Console.IsInputRedirected)
+    Console.ReadKey();
 

@@ -1,4 +1,4 @@
-﻿using EquipmentBorrowing.Application.Interfaces;
+using EquipmentBorrowing.Application.Interfaces;
 using EquipmentBorrowing.Application.Models;
 using EquipmentBorrowing.Domain;
 
@@ -121,6 +121,12 @@ public class InMemoryBorrowingRepository : IBorrowingRepository
 {
     private readonly Dictionary<int, Borrowing> _borrowings = new();
     private int _nextId = 1;
+    private readonly IEquipmentRepository? _equipmentRepository;
+
+    public InMemoryBorrowingRepository(IEquipmentRepository? equipmentRepository = null)
+    {
+        _equipmentRepository = equipmentRepository;
+    }
 
     public Task AddAsync(
         Borrowing borrowing,
@@ -204,18 +210,39 @@ public class InMemoryBorrowingRepository : IBorrowingRepository
         return (descending ? ordered.Reverse() : ordered).ToList();
     }
 
-    public Task<IReadOnlyList<Borrowing>> CheckoutAtomicallyAsync(int studentId,
+    public async Task<IReadOnlyList<Borrowing>> CheckoutAtomicallyAsync(int studentId,
         IReadOnlyList<int> equipmentIds, DateTime dueDate, CancellationToken cancellationToken = default)
     {
-        var records = equipmentIds.Select(id => new Borrowing { Id = _nextId++, StudentId = studentId, EquipmentId = id, BorrowedOn = DateTime.Today, ExpectedReturnOn = dueDate.Date }).ToList();
+        if (_equipmentRepository is null)
+            throw new InvalidOperationException("The in-memory borrowing repository needs an equipment repository.");
+        var records = new List<Borrowing>();
+        foreach (var id in equipmentIds)
+        {
+            var item = await _equipmentRepository.GetByIdAsync(id, cancellationToken);
+            if (item is null) throw new EquipmentBorrowing.Application.Errors.EquipmentNotFoundError($"Equipment {id} does not exist.");
+            if (!item.IsAvailable) throw new EquipmentBorrowing.Application.Errors.EquipmentNotAvailableError($"Equipment {id} is not available.");
+            records.Add(new Borrowing { Id = _nextId++, StudentId = studentId, EquipmentId = id, BorrowedOn = DateTime.Today, ExpectedReturnOn = dueDate.Date });
+        }
+        foreach (var id in equipmentIds)
+        {
+            var item = await _equipmentRepository.GetByIdAsync(id, cancellationToken);
+            item!.IsAvailable = false;
+            await _equipmentRepository.SaveAsync(item, cancellationToken);
+        }
         foreach (var row in records) _borrowings[row.Id] = row;
-        return Task.FromResult<IReadOnlyList<Borrowing>>(records);
+        return records;
     }
 
-    public Task<Borrowing> ReturnAtomicallyAsync(int borrowingId, DateTime returnedOn, CancellationToken cancellationToken = default)
+    public async Task<Borrowing> ReturnAtomicallyAsync(int borrowingId, DateTime returnedOn, CancellationToken cancellationToken = default)
     {
-        if (!_borrowings.TryGetValue(borrowingId, out var row)) throw new InvalidOperationException("Borrowing was not found.");
+        if (!_borrowings.TryGetValue(borrowingId, out var row)) throw new EquipmentBorrowing.Application.Errors.BorrowingNotFoundError($"Borrowing {borrowingId} does not exist.");
+        if (row.Status != BorrowingStatus.Active) throw new EquipmentBorrowing.Application.Errors.BorrowingAlreadyReturnedError("This borrowing was already returned.");
+        if (_equipmentRepository is null) throw new InvalidOperationException("The in-memory borrowing repository needs an equipment repository.");
+        var item = await _equipmentRepository.GetByIdAsync(row.EquipmentId, cancellationToken)
+            ?? throw new EquipmentBorrowing.Application.Errors.EquipmentNotFoundError($"Equipment {row.EquipmentId} does not exist.");
         row.MarkReturned(returnedOn.Date);
-        return Task.FromResult(row);
+        item.IsAvailable = true;
+        await _equipmentRepository.SaveAsync(item, cancellationToken);
+        return row;
     }
 }
