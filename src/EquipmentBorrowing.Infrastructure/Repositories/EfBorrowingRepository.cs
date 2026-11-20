@@ -139,19 +139,28 @@ public class EfBorrowingRepository : IBorrowingRepository
         return await query.AsNoTracking().ToListAsync(cancellationToken);
     }
 
+    // History and search: filter and sort on the joined entities FIRST and
+    // project into BorrowingHistoryRecord only at the very end. EF Core cannot
+    // translate Where/OrderBy applied after a constructor projection.
     public async Task<IReadOnlyList<BorrowingHistoryRecord>> GetHistoryAsync(
         int? studentId = null, int? equipmentId = null,
         CancellationToken cancellationToken = default)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+
         var query = from b in context.Borrowings.AsNoTracking()
                     join s in context.Students on b.StudentId equals s.Id
                     join e in context.Equipment on b.EquipmentId equals e.Id
-                    select new BorrowingHistoryRecord(b.Id, b.StudentId, s.Name, b.EquipmentId,
-                        e.Name, b.BorrowedOn, b.ExpectedReturnOn, b.ReturnedOn, b.Status);
-        if (studentId.HasValue) query = query.Where(x => x.StudentId == studentId.Value);
-        if (equipmentId.HasValue) query = query.Where(x => x.EquipmentId == equipmentId.Value);
-        return await query.OrderByDescending(x => x.BorrowedOn).ThenByDescending(x => x.BorrowingId)
+                    select new { b, s, e };
+
+        if (studentId.HasValue) query = query.Where(x => x.b.StudentId == studentId.Value);
+        if (equipmentId.HasValue) query = query.Where(x => x.b.EquipmentId == equipmentId.Value);
+
+        return await query
+            .OrderByDescending(x => x.b.BorrowedOn)
+            .ThenByDescending(x => x.b.Id)
+            .Select(x => new BorrowingHistoryRecord(x.b.Id, x.b.StudentId, x.s.Name, x.b.EquipmentId,
+                x.e.Name, x.b.BorrowedOn, x.b.ExpectedReturnOn, x.b.ReturnedOn, x.b.Status))
             .ToListAsync(cancellationToken);
     }
 
@@ -160,22 +169,45 @@ public class EfBorrowingRepository : IBorrowingRepository
         CancellationToken cancellationToken = default)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+
         var query = from b in context.Borrowings.AsNoTracking()
                     join s in context.Students on b.StudentId equals s.Id
                     join e in context.Equipment on b.EquipmentId equals e.Id
-                    select new BorrowingHistoryRecord(b.Id, b.StudentId, s.Name, b.EquipmentId,
-                        e.Name, b.BorrowedOn, b.ExpectedReturnOn, b.ReturnedOn, b.Status);
+                    select new { b, s, e };
+
         var term = text?.Trim();
         if (!string.IsNullOrEmpty(term))
-            query = query.Where(x => EF.Functions.ILike(x.StudentName, $"%{term}%") ||
-                EF.Functions.ILike(x.EquipmentName, $"%{term}%") ||
-                context.Students.Any(s => s.Id == x.StudentId && EF.Functions.ILike(s.StudentNumber, $"%{term}%")));
-        if (status == BorrowingStatusFilter.Active) query = query.Where(x => x.Status == BorrowingStatus.Active);
-        if (status == BorrowingStatusFilter.Returned) query = query.Where(x => x.Status == BorrowingStatus.Returned);
-        return sortField == BorrowingSortField.CheckoutDate
-            ? await (descending ? query.OrderByDescending(x => x.BorrowedOn).ThenByDescending(x => x.BorrowingId) : query.OrderBy(x => x.BorrowedOn).ThenBy(x => x.BorrowingId)).ToListAsync(cancellationToken)
-            : await (descending ? query.OrderByDescending(x => x.ExpectedReturnOn).ThenByDescending(x => x.BorrowingId) : query.OrderBy(x => x.ExpectedReturnOn).ThenBy(x => x.BorrowingId)).ToListAsync(cancellationToken);
+        {
+            // % and _ typed by the user are matched literally, not as wildcards.
+            var pattern = $"%{EscapeLike(term)}%";
+            query = query.Where(x =>
+                EF.Functions.ILike(x.s.Name, pattern, "\\") ||
+                EF.Functions.ILike(x.s.StudentNumber, pattern, "\\") ||
+                EF.Functions.ILike(x.e.Name, pattern, "\\"));
+        }
+
+        if (status == BorrowingStatusFilter.Active)
+            query = query.Where(x => x.b.Status == BorrowingStatus.Active);
+        else if (status == BorrowingStatusFilter.Returned)
+            query = query.Where(x => x.b.Status == BorrowingStatus.Returned);
+
+        // The borrowing id is always the tie-breaker so the order is stable.
+        var ordered = sortField == BorrowingSortField.CheckoutDate
+            ? (descending
+                ? query.OrderByDescending(x => x.b.BorrowedOn).ThenByDescending(x => x.b.Id)
+                : query.OrderBy(x => x.b.BorrowedOn).ThenBy(x => x.b.Id))
+            : (descending
+                ? query.OrderByDescending(x => x.b.ExpectedReturnOn).ThenByDescending(x => x.b.Id)
+                : query.OrderBy(x => x.b.ExpectedReturnOn).ThenBy(x => x.b.Id));
+
+        return await ordered
+            .Select(x => new BorrowingHistoryRecord(x.b.Id, x.b.StudentId, x.s.Name, x.b.EquipmentId,
+                x.e.Name, x.b.BorrowedOn, x.b.ExpectedReturnOn, x.b.ReturnedOn, x.b.Status))
+            .ToListAsync(cancellationToken);
     }
+
+    private static string EscapeLike(string value) =>
+        value.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_");
 
     public async Task<IReadOnlyList<Borrowing>> CheckoutAtomicallyAsync(int studentId,
         IReadOnlyList<int> equipmentIds, DateTime dueDate, CancellationToken cancellationToken = default)
