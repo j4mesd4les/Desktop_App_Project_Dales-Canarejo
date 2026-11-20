@@ -1,8 +1,8 @@
 # Campus Equipment Borrowing System
 
-## Laboratory Activity 4 — current partial implementation
+## Laboratory Activity 4 — required workflows implemented
 
-This branch covers UC-12–16 (student registration, student information updates, eligibility changes, equipment registration, and equipment information updates). It also moves the application's EF Core provider to PostgreSQL. The remaining Lab 4 use cases and evidence are still in progress.
+This branch continues the Labs 1–3 system with the required Lab 4 scope: UC-01–09 and UC-12–16. Deferred cases are not included. The PostgreSQL setup and use-case notes are in this README and [`docs/lab4-use-cases.md`](docs/lab4-use-cases.md).
 
 ### Setup for the current PostgreSQL version
 
@@ -29,16 +29,21 @@ The migration builds a clean PostgreSQL schema and inserts the sample records on
 
 Student and equipment numbers are trimmed and normalized to uppercase for uniqueness checks. New students default to eligible; new equipment defaults to available. Updates change descriptive fields only, so eligibility is changed through its own action and an equipment item's availability remains controlled by borrowing and return workflows. Borrowing history is kept; there is no delete action.
 
-### Current slice status
+### Lab 4 scope
 
-| Use cases | Status in this branch |
+| Use cases | Included behavior |
 |---|---|
-| UC-12–14 | Student registration, details, contact, and eligibility workflows added. |
-| UC-15–16 | Equipment registration and descriptive update workflows added. |
-| UC-01–05 | Existing Lab 3 workflows retained; PostgreSQL schema includes the existing records and rules. |
-| UC-06–09 | Deferred to later work. |
+| UC-01–05 | Equipment catalog/availability, single checkout, active list, atomic return. |
+| UC-06 | Multi-item checkout with transaction-boundary checks and all-or-none write. |
+| UC-07–09 | Student and equipment histories, search, status filter, stable date sorting. |
+| UC-12–14 | Student registration, descriptive updates and eligibility changes. |
+| UC-15–16 | Equipment registration and descriptive updates. |
 
-The use-case count for this slice is five of fourteen required cases, about one third of the functional scope. It does not complete the full Lab 4 submission, diagram, fourteen-case traceability matrix, or integration/restart evidence.
+The use-case diagram, catalog and traceability notes are in [`docs/lab4-use-cases.md`](docs/lab4-use-cases.md). A successful build does not replace the PostgreSQL integration, failure, and restart demonstration; record those observed results there before submitting.
+
+Checkout and return each use one PostgreSQL transaction. Checkout locks the selected student and equipment rows, rechecks eligibility, active count and availability, then updates availability and inserts borrowings together. Return updates the borrowing and equipment together. Each operation uses a short-lived EF Core context from `IDbContextFactory`; the desktop ViewModels load asynchronously. A commit communication failure is reported as unknown, without automatic retry, and asks staff to refresh first.
+
+In the Equipment screen, the equipment list shows the item IDs used by multi-item checkout. Enter two or more comma-separated item IDs in the multi-checkout field, then use the selected student and due date. In Borrowings, use the history search for general search/filter/sort; the student/equipment history fields accept their internal IDs.
 
 ## 1. Solution Structure
 

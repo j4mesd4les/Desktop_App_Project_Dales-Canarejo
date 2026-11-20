@@ -28,63 +28,27 @@ public class BorrowEquipmentService
         DateTime expectedReturnOn,
         CancellationToken cancellationToken = default)
     {
-        var student = await _students.GetByIdAsync(
-            studentId,
-            cancellationToken);
-
-        if (student == null)
-            throw new StudentNotFoundError(
-                $"Student {studentId} does not exist.");
-
-        if (!student.IsAllowedToBorrow)
-            throw new StudentNotAllowedToBorrowError(
-                $"Student {studentId} is not currently allowed to borrow.");
-
-        var equipment = await _equipment.GetByIdAsync(
-            equipmentId,
-            cancellationToken);
-
-        if (equipment == null)
-            throw new EquipmentNotFoundError(
-                $"Equipment {equipmentId} does not exist.");
-
-        if (!equipment.IsAvailable)
-            throw new EquipmentNotAvailableError(
-                $"Equipment {equipmentId} is not currently available.");
-
-        var activeCount = await _borrowings.CountActiveForStudentAsync(
-            studentId,
-            cancellationToken);
-
-        if (activeCount >= MaxActiveBorrowings)
-            throw new BorrowingLimitExceededError(
-                $"Student {studentId} already has {activeCount} active borrowings.");
-
         var borrowedOn = DateTime.Today;
 
         if (expectedReturnOn.Date <= borrowedOn)
             throw new ArgumentException(
                 "Expected return date must be after the borrowing date.");
 
-        var borrowing = new Borrowing
-        {
-            Id = 0,
-            StudentId = studentId,
-            EquipmentId = equipmentId,
-            BorrowedOn = borrowedOn,
-            ExpectedReturnOn = expectedReturnOn.Date
-        };
+        return (await _borrowings.CheckoutAtomicallyAsync(studentId,
+            new[] { equipmentId }, expectedReturnOn.Date, cancellationToken)).Single();
+    }
 
-        equipment.IsAvailable = false;
-
-        await _equipment.SaveAsync(
-            equipment,
-            cancellationToken);
-
-        await _borrowings.AddAsync(
-            borrowing,
-            cancellationToken);
-
-        return borrowing;
+    public async Task<IReadOnlyList<Borrowing>> BorrowMultipleAsync(int studentId,
+        IReadOnlyList<int> equipmentIds, DateTime expectedReturnOn,
+        CancellationToken cancellationToken = default)
+    {
+        if (equipmentIds.Count < 2)
+            throw new ArgumentException("Select at least two different equipment items.");
+        if (equipmentIds.Distinct().Count() != equipmentIds.Count)
+            throw new ArgumentException("Duplicate equipment selections are not allowed.");
+        if (expectedReturnOn.Date <= DateTime.Today)
+            throw new ArgumentException("Expected return date must be after today.");
+        return await _borrowings.CheckoutAtomicallyAsync(studentId, equipmentIds,
+            expectedReturnOn.Date, cancellationToken);
     }
 }

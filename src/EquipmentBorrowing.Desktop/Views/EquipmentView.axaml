@@ -23,7 +23,7 @@
 					   FontWeight="SemiBold"
 					   Foreground="{StaticResource AppTextPrimaryBrush}"/>
 
-			<TextBlock Text="Select a student, equipment item, and expected return date."
+            <TextBlock Text="Select a student and equipment items, then set an expected return date."
 					   FontSize="14"
 					   Foreground="{StaticResource AppTextSecondaryBrush}"/>
 
@@ -106,7 +106,7 @@
 								BorderThickness="1"
 								CornerRadius="6">
 
-							<Grid ColumnDefinitions="80, *, Auto">
+                            <Grid ColumnDefinitions="80, *, Auto">
 
 								<TextBlock Grid.Column="0"
 										   Text="{Binding EquipmentNumber}"
@@ -114,12 +114,10 @@
 										   Foreground="{StaticResource AppPrimaryBrush}"
 										   VerticalAlignment="Center"/>
 
-								<TextBlock Grid.Column="1"
-										   Text="{Binding Name}"
-										   FontSize="16"
-										   FontWeight="Medium"
-										   Foreground="{StaticResource AppTextPrimaryBrush}"
-										   VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                    <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Medium" Foreground="{StaticResource AppTextPrimaryBrush}"/>
+                                    <TextBlock Text="{Binding Description}" FontSize="12" Foreground="{StaticResource AppTextSecondaryBrush}"/>
+                                </StackPanel>
 
 								<Border Grid.Column="2"
 										Classes="availabilityBadge"
@@ -155,7 +153,11 @@
 					   Classes.error="{Binding IsError}"
 					   TextWrapping="Wrap"/>
 
-			<!-- Existing working button preserved -->
+            <TextBox PlaceholderText="For multi-item checkout, enter at least two equipment IDs separated by commas"
+                     Text="{Binding EquipmentIdsForMultiCheckout}"/>
+            <Button Content="Check Out Multiple Items"
+                    Command="{Binding BorrowMultipleCommand}"
+                    HorizontalAlignment="Right"/>
 			<Button Content="Borrow Selected Equipment"
 					Command="{Binding BorrowSelectedEquipmentCommand}"
 					Classes="primary"

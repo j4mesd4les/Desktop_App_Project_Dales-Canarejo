@@ -182,4 +182,40 @@ public class InMemoryBorrowingRepository : IBorrowingRepository
 
         return Task.FromResult(details);
     }
+
+    public Task<IReadOnlyList<BorrowingHistoryRecord>> GetHistoryAsync(int? studentId = null,
+        int? equipmentId = null, CancellationToken cancellationToken = default)
+    {
+        IReadOnlyList<BorrowingHistoryRecord> rows = _borrowings.Values
+            .Where(b => (!studentId.HasValue || b.StudentId == studentId) && (!equipmentId.HasValue || b.EquipmentId == equipmentId))
+            .Select(b => new BorrowingHistoryRecord(b.Id, b.StudentId, $"Student #{b.StudentId}", b.EquipmentId,
+                $"Equipment #{b.EquipmentId}", b.BorrowedOn, b.ExpectedReturnOn, b.ReturnedOn, b.Status)).ToList();
+        return Task.FromResult(rows);
+    }
+
+    public async Task<IReadOnlyList<BorrowingHistoryRecord>> SearchAsync(string? text,
+        BorrowingStatusFilter status, BorrowingSortField sortField, bool descending,
+        CancellationToken cancellationToken = default)
+    {
+        var rows = (await GetHistoryAsync(cancellationToken: cancellationToken)).AsEnumerable();
+        if (status == BorrowingStatusFilter.Active) rows = rows.Where(r => r.Status == BorrowingStatus.Active);
+        if (status == BorrowingStatusFilter.Returned) rows = rows.Where(r => r.Status == BorrowingStatus.Returned);
+        var ordered = sortField == BorrowingSortField.CheckoutDate ? rows.OrderBy(r => r.BorrowedOn).ThenBy(r => r.BorrowingId) : rows.OrderBy(r => r.ExpectedReturnOn).ThenBy(r => r.BorrowingId);
+        return (descending ? ordered.Reverse() : ordered).ToList();
+    }
+
+    public Task<IReadOnlyList<Borrowing>> CheckoutAtomicallyAsync(int studentId,
+        IReadOnlyList<int> equipmentIds, DateTime dueDate, CancellationToken cancellationToken = default)
+    {
+        var records = equipmentIds.Select(id => new Borrowing { Id = _nextId++, StudentId = studentId, EquipmentId = id, BorrowedOn = DateTime.Today, ExpectedReturnOn = dueDate.Date }).ToList();
+        foreach (var row in records) _borrowings[row.Id] = row;
+        return Task.FromResult<IReadOnlyList<Borrowing>>(records);
+    }
+
+    public Task<Borrowing> ReturnAtomicallyAsync(int borrowingId, DateTime returnedOn, CancellationToken cancellationToken = default)
+    {
+        if (!_borrowings.TryGetValue(borrowingId, out var row)) throw new InvalidOperationException("Borrowing was not found.");
+        row.MarkReturned(returnedOn.Date);
+        return Task.FromResult(row);
+    }
 }

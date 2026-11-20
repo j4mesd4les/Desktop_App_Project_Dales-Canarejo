@@ -1,116 +1,57 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:EquipmentBorrowing.Desktop.ViewModels"
-             xmlns:models="using:EquipmentBorrowing.Application.Models"
-             mc:Ignorable="d"
-             d:DesignWidth="800"
-             d:DesignHeight="450"
-             x:Class="EquipmentBorrowing.Desktop.Views.BorrowingsView"
-             x:DataType="vm:BorrowingsViewModel">
-
-	<Grid RowDefinitions="Auto, *, Auto">
-
-		<!-- Header -->
-		<StackPanel Grid.Row="0"
-                    Spacing="5"
-                    Margin="0,0,0,20">
-
-			<TextBlock Text="Active Borrowings"
-                       FontSize="28"
-                       FontWeight="SemiBold"
-                       Foreground="{StaticResource AppTextPrimaryBrush}"/>
-
-			<TextBlock Text="View equipment currently borrowed by students."
-                       FontSize="14"
-                       Foreground="{StaticResource AppTextSecondaryBrush}"/>
-
-		</StackPanel>
-
-		<!-- Borrowing List -->
-		<Border Grid.Row="1"
-                Background="{StaticResource AppSidebarBrush}"
-                BorderBrush="{StaticResource AppBorderBrush}"
-                BorderThickness="1"
-                CornerRadius="8">
-
-			<ListBox ItemsSource="{Binding Borrowings}"
-                     SelectedItem="{Binding SelectedBorrowing}"
-                     Background="Transparent"
-                     BorderThickness="0"
-                     Margin="10">
-
-				<ListBox.ItemTemplate>
-					<DataTemplate x:DataType="models:ActiveBorrowingDetails">
-
-						<Border Classes="itemCard"
-                                Padding="15"
-                                Margin="0,0,0,8"
-                                Background="White"
-                                BorderBrush="{StaticResource AppBorderBrush}"
-                                BorderThickness="1"
-                                CornerRadius="6">
-
-							<Grid ColumnDefinitions="80, *, 150">
-
-								<TextBlock Grid.Column="0"
-                                           Text="{Binding BorrowingId, StringFormat='#{0}'}"
-                                           FontWeight="Bold"
-                                           Foreground="{StaticResource AppPrimaryBrush}"
-                                           VerticalAlignment="Center"/>
-
-								<StackPanel Grid.Column="1"
-                                            Spacing="4">
-
-									<TextBlock Text="{Binding EquipmentName}"
-                                               FontSize="16"
-                                               FontWeight="Medium"
-                                               Foreground="{StaticResource AppTextPrimaryBrush}"/>
-
-									<TextBlock Text="{Binding StudentName, StringFormat='Borrowed by: {0}'}"
-                                               FontSize="14"
-                                               Foreground="{StaticResource AppTextSecondaryBrush}"/>
-
-								</StackPanel>
-
-								<TextBlock Grid.Column="2"
-                                           Text="{Binding ExpectedReturnOn, StringFormat='Due: {0:yyyy-MM-dd}'}"
-                                           Foreground="{StaticResource AppTextSecondaryBrush}"
-                                           VerticalAlignment="Center"/>
-
-							</Grid>
-
-						</Border>
-
-					</DataTemplate>
-				</ListBox.ItemTemplate>
-
-			</ListBox>
-
-		</Border>
-
-		<!-- Actions and Message -->
-		<Grid Grid.Row="2"
-              ColumnDefinitions="*, Auto"
-              Margin="0,20,0,0">
-
-			<TextBlock Grid.Column="0"
-                       Text="{Binding Message}"
-                       Classes="message"
-                       Classes.error="{Binding IsError}"
-                       VerticalAlignment="Center"
-                       TextWrapping="Wrap"
-                       Margin="0,0,20,0"/>
-
-			<Button Grid.Column="1"
-                    Content="Return Selected Borrowing"
-                    Command="{Binding ReturnSelectedBorrowingCommand}"
-                    Classes="primary"/>
-
-		</Grid>
-
-	</Grid>
-
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:EquipmentBorrowing.Desktop.ViewModels" xmlns:models="using:EquipmentBorrowing.Application.Models" xmlns:domain="using:EquipmentBorrowing.Domain" x:Class="EquipmentBorrowing.Desktop.Views.BorrowingsView" x:DataType="vm:BorrowingsViewModel">
+  <Grid RowDefinitions="Auto,*,*,Auto" RowSpacing="12">
+    <StackPanel Grid.Row="0" Spacing="6">
+      <TextBlock Text="Borrowings and History" FontSize="28" FontWeight="SemiBold"/>
+      <TextBlock Text="Active items can be returned. Search all active and returned records below."/>
+    </StackPanel>
+    <Grid Grid.Row="1" RowDefinitions="Auto,*">
+      <TextBlock Text="Active Borrowings" FontSize="18" FontWeight="SemiBold"/>
+      <ListBox Grid.Row="1" ItemsSource="{Binding Borrowings}" SelectedItem="{Binding SelectedBorrowing}">
+        <ListBox.ItemTemplate><DataTemplate x:DataType="models:ActiveBorrowingDetails">
+          <Grid ColumnDefinitions="65,*,170" Margin="6"><TextBlock Text="{Binding BorrowingId, StringFormat='#{0}'}"/>
+            <StackPanel Grid.Column="1"><TextBlock Text="{Binding EquipmentName}"/><TextBlock Text="{Binding StudentName, StringFormat='Student: {0}'}"/></StackPanel>
+            <TextBlock Grid.Column="2" Text="{Binding ExpectedReturnOn, StringFormat='Due {0:yyyy-MM-dd}'}"/>
+          </Grid>
+        </DataTemplate></ListBox.ItemTemplate>
+      </ListBox>
+    </Grid>
+    <Grid Grid.Row="2" RowDefinitions="Auto,Auto,*" RowSpacing="6">
+      <TextBlock Text="Borrowing History Search" FontSize="18" FontWeight="SemiBold"/>
+      <Grid Grid.Row="1" ColumnDefinitions="2*,*,*,Auto,Auto,Auto" ColumnSpacing="6">
+        <TextBox PlaceholderText="Student name/number or equipment name" Text="{Binding SearchText}"/>
+        <ComboBox Grid.Column="1" ItemsSource="{Binding StatusOptions}" SelectedItem="{Binding StatusChoice}"/>
+        <ComboBox Grid.Column="2" ItemsSource="{Binding SortOptions}" SelectedItem="{Binding SortChoice}"/>
+        <CheckBox Grid.Column="3" Content="Newest first" IsChecked="{Binding Descending}" VerticalAlignment="Center"/>
+        <Button Grid.Column="4" Content="Search" Command="{Binding SearchCommand}"/>
+        <Button Grid.Column="5" Content="Clear" Command="{Binding ClearSearchCommand}"/>
+      </Grid>
+      <StackPanel Grid.Row="2" Spacing="5">
+      <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="6">
+        <ComboBox ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedHistoryStudent}" PlaceholderText="Choose student history">
+          <ComboBox.ItemTemplate><DataTemplate x:DataType="domain:Student"><TextBlock Text="{Binding Name}"/></DataTemplate></ComboBox.ItemTemplate>
+        </ComboBox>
+        <ComboBox Grid.Column="1" ItemsSource="{Binding EquipmentItems}" SelectedItem="{Binding SelectedHistoryEquipment}" PlaceholderText="Choose equipment history">
+          <ComboBox.ItemTemplate><DataTemplate x:DataType="domain:Equipment"><TextBlock Text="{Binding EquipmentNumber}"/></DataTemplate></ComboBox.ItemTemplate>
+        </ComboBox>
+        <Button Grid.Column="2" Content="Load Selected History" Command="{Binding LoadSelectedHistoryCommand}"/>
+      </Grid>
+      <ListBox ItemsSource="{Binding History}">
+        <ListBox.ItemTemplate><DataTemplate x:DataType="models:BorrowingHistoryRecord">
+          <Grid ColumnDefinitions="45,*,*,*,*,*,*" Margin="5">
+            <TextBlock Text="{Binding BorrowingId, StringFormat='#{0}'}"/>
+            <TextBlock Grid.Column="1" Text="{Binding StudentName}"/>
+            <TextBlock Grid.Column="2" Text="{Binding EquipmentName}"/>
+            <TextBlock Grid.Column="3" Text="{Binding BorrowedOn, StringFormat='Out {0:yyyy-MM-dd}'}"/>
+            <TextBlock Grid.Column="4" Text="{Binding ExpectedReturnOn, StringFormat='Due {0:yyyy-MM-dd}'}"/>
+            <TextBlock Grid.Column="5" Text="{Binding ReturnedOn, StringFormat='Returned {0:yyyy-MM-dd}'}"/>
+            <TextBlock Grid.Column="6" Text="{Binding Status}"/>
+          </Grid>
+        </DataTemplate></ListBox.ItemTemplate>
+      </ListBox></StackPanel>
+    </Grid>
+    <Grid Grid.Row="3" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+      <TextBlock Text="{Binding Message}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+      <Button Grid.Column="1" Content="Return Selected Active Item" Command="{Binding ReturnSelectedBorrowingCommand}" Classes="primary"/>
+    </Grid>
+  </Grid>
 </UserControl>
-
