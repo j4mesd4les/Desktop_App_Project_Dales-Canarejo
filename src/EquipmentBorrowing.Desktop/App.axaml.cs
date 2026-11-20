@@ -5,6 +5,8 @@ using EquipmentBorrowing.Desktop.ViewModels;
 using EquipmentBorrowing.Desktop.Views;
 using EquipmentBorrowing.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading.Tasks;
 
 namespace EquipmentBorrowing.Desktop;
 
@@ -15,23 +17,19 @@ public partial class App : Avalonia.Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override async void OnFrameworkInitializationCompleted()
+    public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var services = new ServiceCollection();
 
-            // Repositories: now backed by PostgreSQL through EF Core instead of
-            // in-memory dictionaries. Registered in one place (Infrastructure).
             services.AddPersistence();
 
-            // Application services
             services.AddTransient<BorrowEquipmentService>();
             services.AddTransient<ReturnEquipmentService>();
             services.AddTransient<StudentManagementService>();
             services.AddTransient<EquipmentManagementService>();
 
-            // ViewModels
             services.AddTransient<EquipmentViewModel>();
             services.AddTransient<BorrowingsViewModel>();
             services.AddTransient<StudentManagementViewModel>();
@@ -39,23 +37,37 @@ public partial class App : Avalonia.Application
             services.AddTransient<MainViewModel>();
 
             var serviceProvider = services.BuildServiceProvider();
-
-            // Creates the database on first run and applies any new
-            // migrations. Existing data is never wiped.
-            await serviceProvider.InitializeDatabaseAsync();
-
             var mainViewModel = serviceProvider.GetRequiredService<MainViewModel>();
 
-            await mainViewModel.EquipmentView.LoadEquipmentAsync();
-            await mainViewModel.EquipmentView.LoadStudentsAsync();
-            await mainViewModel.BorrowingsView.LoadBorrowingsAsync();
-
+            // Create the window first so it always appears,
+            // then load the database in the background.
             desktop.MainWindow = new MainWindow
             {
                 DataContext = mainViewModel
             };
+
+            _ = StartDatabaseAsync(serviceProvider, mainViewModel);
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private static async Task StartDatabaseAsync(
+        IServiceProvider serviceProvider,
+        MainViewModel mainViewModel)
+    {
+        try
+        {
+            await serviceProvider.InitializeDatabaseAsync();
+            await mainViewModel.EquipmentView.LoadEquipmentAsync();
+            await mainViewModel.EquipmentView.LoadStudentsAsync();
+            await mainViewModel.BorrowingsView.LoadBorrowingsAsync();
+        }
+        catch (Exception)
+        {
+            mainViewModel.EquipmentView.Message =
+                "Could not connect to the database. Check that PostgreSQL is running and the connection string is set, then restart the app.";
+            mainViewModel.EquipmentView.IsError = true;
+        }
     }
 }
