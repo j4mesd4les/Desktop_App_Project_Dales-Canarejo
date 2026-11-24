@@ -1,6 +1,9 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/EquipmentBorrowing.Application/EquipmentBorrowing.Application.csproj" />
+    <Project Path="src/EquipmentBorrowing.Contracts/EquipmentBorrowing.Contracts.csproj" />
+    <Project Path="src/EquipmentBorrowing.Client/EquipmentBorrowing.Client.csproj" />
+    <Project Path="src/EquipmentBorrowing.Api/EquipmentBorrowing.Api.csproj" />
     <Project Path="src/EquipmentBorrowing.Desktop/EquipmentBorrowing.Desktop.csproj" Id="50720be9-f590-477a-8b39-04f2a149bfb0" />
     <Project Path="src/EquipmentBorrowing.Domain/EquipmentBorrowing.Domain.csproj" />
     <Project Path="src/EquipmentBorrowing.Infrastructure/EquipmentBorrowing.Infrastructure.csproj" />

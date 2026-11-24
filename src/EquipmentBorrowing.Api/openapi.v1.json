@@ -1,0 +1,66 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "Campus Equipment Borrowing API", "version": "1.0.0", "description": "Versioned JSON API for the campus equipment borrowing system." },
+  "servers": [{ "url": "http://localhost:5080" }],
+  "paths": {
+    "/api/v1/equipment": {
+      "get": { "operationId": "API-01", "summary": "List equipment", "parameters": [{ "name": "available", "in": "query", "required": false, "schema": { "type": "boolean" } }], "responses": { "200": { "description": "Equipment list", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Equipment" } } } } }, "400": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } },
+      "post": { "operationId": "API-08", "summary": "Register equipment", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateEquipment" } } } }, "responses": { "201": { "description": "Equipment created", "headers": { "Location": { "schema": { "type": "string" } } }, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Equipment" } } } }, "400": { "$ref": "#/components/responses/Error" }, "409": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/api/v1/students": {
+      "get": { "operationId": "API-02", "summary": "Search or list students", "parameters": [{ "name": "search", "in": "query", "required": false, "schema": { "type": "string" } }], "responses": { "200": { "description": "Student list", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Student" } } } } }, "400": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } },
+      "post": { "operationId": "API-04", "summary": "Register a student", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateStudent" } } } }, "responses": { "201": { "description": "Student created", "headers": { "Location": { "schema": { "type": "string" } } }, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Student" } } } }, "400": { "$ref": "#/components/responses/Error" }, "409": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/api/v1/students/{id}": {
+      "parameters": [{ "$ref": "#/components/parameters/Id" }],
+      "get": { "operationId": "API-03", "summary": "Get a student", "responses": { "200": { "description": "Student", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Student" } } } }, "404": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } },
+      "put": { "operationId": "API-05", "summary": "Update student details", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateStudent" } } } }, "responses": { "200": { "description": "Updated student", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Student" } } } }, "400": { "$ref": "#/components/responses/Error" }, "404": { "$ref": "#/components/responses/Error" }, "409": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/api/v1/students/{id}/eligibility": {
+      "patch": { "operationId": "API-06", "summary": "Change student eligibility", "parameters": [{ "$ref": "#/components/parameters/Id" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Eligibility" } } } }, "responses": { "200": { "description": "Student eligibility", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Student" } } } }, "400": { "$ref": "#/components/responses/Error" }, "404": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/api/v1/equipment/{id}": {
+      "parameters": [{ "$ref": "#/components/parameters/Id" }],
+      "get": { "operationId": "API-07", "summary": "Get equipment", "responses": { "200": { "description": "Equipment item", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Equipment" } } } }, "404": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } },
+      "put": { "operationId": "API-09", "summary": "Update descriptive equipment details", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateEquipment" } } } }, "responses": { "200": { "description": "Updated equipment", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Equipment" } } } }, "400": { "$ref": "#/components/responses/Error" }, "404": { "$ref": "#/components/responses/Error" }, "409": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/api/v1/equipment/{id}/borrowings": {
+      "get": { "operationId": "API-16", "summary": "Get equipment borrowing history", "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "description": "Borrowing history, including active and returned rows", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Borrowing" } } } } }, "404": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/api/v1/borrowings": {
+      "get": { "operationId": "API-14", "summary": "Search, filter and sort borrowings", "parameters": [{ "name": "search", "in": "query", "schema": { "type": "string" } }, { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["All", "Active", "Returned"], "default": "All" } }, { "name": "sort", "in": "query", "schema": { "type": "string", "enum": ["borrowedDate", "expectedReturnDate"], "default": "borrowedDate" } }, { "name": "direction", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "asc" } }], "responses": { "200": { "description": "Matching borrowing records", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Borrowing" } } } } }, "400": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } },
+      "post": { "operationId": "API-10", "summary": "Borrow one equipment item", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateBorrowing" } } } }, "responses": { "201": { "description": "Borrowing created", "headers": { "Location": { "schema": { "type": "string" } } }, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Borrowing" } } } }, "400": { "$ref": "#/components/responses/Error" }, "404": { "$ref": "#/components/responses/Error" }, "409": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/api/v1/checkout-requests": {
+      "post": { "operationId": "API-11", "summary": "Atomically check out multiple items", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Checkout" } } } }, "responses": { "201": { "description": "All borrowings created together", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CheckoutResponse" } } } }, "400": { "$ref": "#/components/responses/Error" }, "404": { "$ref": "#/components/responses/Error" }, "409": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/api/v1/borrowings/{id}": {
+      "parameters": [{ "$ref": "#/components/parameters/Id" }],
+      "get": { "operationId": "API-13", "summary": "Get a borrowing", "responses": { "200": { "description": "Borrowing record", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Borrowing" } } } }, "404": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/api/v1/borrowings/{id}/return": {
+      "post": { "operationId": "API-12", "summary": "Return equipment", "parameters": [{ "$ref": "#/components/parameters/Id" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "additionalProperties": false } } } }, "responses": { "200": { "description": "Returned borrowing", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Borrowing" } } } }, "400": { "$ref": "#/components/responses/Error" }, "404": { "$ref": "#/components/responses/Error" }, "409": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/api/v1/students/{id}/borrowings": {
+      "get": { "operationId": "API-15", "summary": "Get student borrowing history", "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "description": "Borrowing history, including active and returned rows", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Borrowing" } } } } }, "404": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } }
+    }
+  },
+  "components": {
+    "parameters": { "Id": { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int32", "minimum": 1 } } },
+    "responses": { "Error": { "description": "Safe API error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } } },
+    "schemas": {
+      "Error": { "type": "object", "required": ["code", "message"], "properties": { "code": { "type": "string" }, "message": { "type": "string" } }, "additionalProperties": false },
+      "Student": { "type": "object", "required": ["id", "studentNumber", "fullName", "isEligible"], "properties": { "id": { "type": "integer" }, "studentNumber": { "type": "string" }, "fullName": { "type": "string" }, "contact": { "type": ["string", "null"] }, "isEligible": { "type": "boolean" } }, "additionalProperties": false },
+      "CreateStudent": { "type": "object", "required": ["studentNumber", "fullName"], "properties": { "studentNumber": { "type": "string" }, "fullName": { "type": "string" }, "contact": { "type": ["string", "null"] } }, "additionalProperties": false },
+      "UpdateStudent": { "$ref": "#/components/schemas/CreateStudent" },
+      "Eligibility": { "type": "object", "required": ["isEligible"], "properties": { "isEligible": { "type": "boolean" } }, "additionalProperties": false },
+      "Equipment": { "type": "object", "required": ["id", "equipmentCode", "name", "isAvailable", "type"], "properties": { "id": { "type": "integer" }, "equipmentCode": { "type": "string" }, "name": { "type": "string" }, "description": { "type": ["string", "null"] }, "isAvailable": { "type": "boolean" }, "type": { "type": "string" } }, "additionalProperties": false },
+      "CreateEquipment": { "type": "object", "required": ["equipmentCode", "name"], "properties": { "equipmentCode": { "type": "string" }, "name": { "type": "string" }, "description": { "type": ["string", "null"] }, "type": { "type": ["string", "null"], "description": "Optional Activity 4 field; omitted values default to General." } }, "additionalProperties": false },
+      "UpdateEquipment": { "$ref": "#/components/schemas/CreateEquipment" },
+      "CreateBorrowing": { "type": "object", "required": ["studentId", "equipmentId", "expectedReturnDate"], "properties": { "studentId": { "type": "integer" }, "equipmentId": { "type": "integer" }, "expectedReturnDate": { "type": "string", "format": "date" } }, "additionalProperties": false },
+      "Checkout": { "type": "object", "required": ["studentId", "equipmentIds", "expectedReturnDate"], "properties": { "studentId": { "type": "integer" }, "equipmentIds": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "uniqueItems": true }, "expectedReturnDate": { "type": "string", "format": "date" } }, "additionalProperties": false },
+      "Borrowing": { "type": "object", "required": ["id", "studentId", "equipmentId", "borrowedDate", "expectedReturnDate", "status", "studentName", "equipmentName"], "properties": { "id": { "type": "integer" }, "studentId": { "type": "integer" }, "equipmentId": { "type": "integer" }, "borrowedDate": { "type": "string", "format": "date" }, "expectedReturnDate": { "type": "string", "format": "date" }, "returnedDate": { "type": ["string", "null"], "format": "date" }, "status": { "type": "string", "enum": ["Active", "Returned"] }, "studentName": { "type": "string" }, "equipmentName": { "type": "string" } }, "additionalProperties": false },
+      "CheckoutResponse": { "type": "object", "required": ["borrowings"], "properties": { "borrowings": { "type": "array", "items": { "$ref": "#/components/schemas/Borrowing" } } }, "additionalProperties": false }
+    }
+  }
+}

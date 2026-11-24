@@ -173,8 +173,8 @@ public class EfBorrowingRepository : IBorrowingRepository
         if (status == BorrowingStatusFilter.Active) query = query.Where(x => x.Status == BorrowingStatus.Active);
         if (status == BorrowingStatusFilter.Returned) query = query.Where(x => x.Status == BorrowingStatus.Returned);
         return sortField == BorrowingSortField.CheckoutDate
-            ? await (descending ? query.OrderByDescending(x => x.BorrowedOn).ThenByDescending(x => x.BorrowingId) : query.OrderBy(x => x.BorrowedOn).ThenBy(x => x.BorrowingId)).ToListAsync(cancellationToken)
-            : await (descending ? query.OrderByDescending(x => x.ExpectedReturnOn).ThenByDescending(x => x.BorrowingId) : query.OrderBy(x => x.ExpectedReturnOn).ThenBy(x => x.BorrowingId)).ToListAsync(cancellationToken);
+            ? await (descending ? query.OrderByDescending(x => x.BorrowedOn).ThenBy(x => x.BorrowingId) : query.OrderBy(x => x.BorrowedOn).ThenBy(x => x.BorrowingId)).ToListAsync(cancellationToken)
+            : await (descending ? query.OrderByDescending(x => x.ExpectedReturnOn).ThenBy(x => x.BorrowingId) : query.OrderBy(x => x.ExpectedReturnOn).ThenBy(x => x.BorrowingId)).ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<Borrowing>> CheckoutAtomicallyAsync(int studentId,
@@ -216,7 +216,7 @@ public class EfBorrowingRepository : IBorrowingRepository
         await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
         try
         {
-            var borrowing = await context.Borrowings.FirstOrDefaultAsync(b => b.Id == borrowingId, cancellationToken)
+            var borrowing = await context.Borrowings.FromSqlInterpolated($"SELECT * FROM \"Borrowings\" WHERE \"Id\" = {borrowingId} FOR UPDATE").SingleOrDefaultAsync(cancellationToken)
                 ?? throw new BorrowingNotFoundError($"Borrowing {borrowingId} does not exist.");
             if (borrowing.Status != BorrowingStatus.Active) throw new BorrowingAlreadyReturnedError("This borrowing was already returned.");
             if (returnedOn.Date < borrowing.BorrowedOn.Date) throw new InvalidOperationException("Return date cannot be before checkout.");

@@ -29,8 +29,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\EquipmentBorrowing.Domain\EquipmentBorrowing.Domain.csproj" />
 		<ProjectReference Include="..\EquipmentBorrowing.Application\EquipmentBorrowing.Application.csproj" />
-		<ProjectReference Include="..\EquipmentBorrowing.Infrastructure\EquipmentBorrowing.Infrastructure.csproj" />
+		<ProjectReference Include="..\EquipmentBorrowing.Contracts\EquipmentBorrowing.Contracts.csproj" />
+		<ProjectReference Include="..\EquipmentBorrowing.Client\EquipmentBorrowing.Client.csproj" />
 	</ItemGroup>
 
 </Project>

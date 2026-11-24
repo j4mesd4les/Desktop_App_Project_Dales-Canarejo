@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EquipmentBorrowing.Application.Interfaces;
-using EquipmentBorrowing.Application.Services;
+using EquipmentBorrowing.Client;
+using EquipmentBorrowing.Contracts;
 using EquipmentBorrowing.Domain;
 using System;
 using System.Collections.ObjectModel;
@@ -12,9 +12,7 @@ namespace EquipmentBorrowing.Desktop.ViewModels;
 
 public partial class EquipmentViewModel : ViewModelBase
 {
-    private readonly IEquipmentRepository _equipmentRepository;
-    private readonly IStudentRepository _studentRepository;
-    private readonly BorrowEquipmentService _borrowService;
+    private readonly IEquipmentBorrowingApiClient _api;
 
     public ObservableCollection<Equipment> Equipment { get; } = new();
 
@@ -35,6 +33,9 @@ public partial class EquipmentViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isError;
 
+    [ObservableProperty]
+    private bool _isLoading;
+
     // Bound to the "Show only available equipment" checkbox.
     [ObservableProperty]
     private bool _showOnlyAvailable;
@@ -50,39 +51,50 @@ public partial class EquipmentViewModel : ViewModelBase
     }
 
     public EquipmentViewModel(
-        IEquipmentRepository equipmentRepository,
-        BorrowEquipmentService borrowService,
-        IStudentRepository studentRepository)
+        IEquipmentBorrowingApiClient api)
     {
-        _equipmentRepository = equipmentRepository;
-        _borrowService = borrowService;
-        _studentRepository = studentRepository;
+        _api = api;
     }
 
     public async Task LoadEquipmentAsync()
     {
-        // The filtering is done by the database (WHERE IsAvailable), not here.
-        var equipment = ShowOnlyAvailable
-            ? await _equipmentRepository.GetAvailableAsync()
-            : await _equipmentRepository.GetAllAsync();
-
-        Equipment.Clear();
-
-        foreach (var item in equipment)
+        IsLoading = true;
+        try
         {
-            Equipment.Add(item);
+            var equipment = await _api.GetEquipmentAsync(ShowOnlyAvailable ? true : null);
+            Equipment.Clear();
+            foreach (var item in equipment.Select(x => x.ToModel())) Equipment.Add(item);
+            Message = Equipment.Count == 0 ? "No equipment matches this view." : string.Empty;
+            IsError = false;
         }
+        catch (Exception ex) { Message = EquipmentBorrowingApiFeedback.For(ex); IsError = true; }
+        finally { IsLoading = false; }
     }
 
     public async Task LoadStudentsAsync()
     {
-        var students = await _studentRepository.GetAllAsync();
+        var students = await _api.GetStudentsAsync();
 
         Students.Clear();
 
-        foreach (var student in students)
+        foreach (var student in students.Select(x => x.ToModel()))
         {
             Students.Add(student);
+        }
+    }
+
+    [RelayCommand]
+    private async Task RefreshAsync()
+    {
+        try
+        {
+            await LoadEquipmentAsync();
+            await LoadStudentsAsync();
+        }
+        catch (Exception ex)
+        {
+            Message = EquipmentBorrowingApiFeedback.For(ex);
+            IsError = true;
         }
     }
 
@@ -112,10 +124,8 @@ public partial class EquipmentViewModel : ViewModelBase
 
         try
         {
-            await _borrowService.BorrowAsync(
-                SelectedStudent.Id,
-                SelectedEquipment.Id,
-                SelectedExpectedReturnDate.Value.DateTime);
+            await _api.BorrowAsync(new CreateBorrowingRequest(SelectedStudent.Id, SelectedEquipment.Id,
+                DateOnly.FromDateTime(SelectedExpectedReturnDate.Value.DateTime)));
 
             Message = $"Successfully borrowed: {SelectedEquipment.Name}";
             IsError = false;
@@ -127,7 +137,9 @@ public partial class EquipmentViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            Message = ex.Message;
+            var feedback = EquipmentBorrowingApiFeedback.For(ex);
+            if (EquipmentBorrowingApiFeedback.NeedsRefresh(ex)) await RefreshAsync();
+            Message = feedback;
             IsError = true;
         }
     }
@@ -137,18 +149,24 @@ public partial class EquipmentViewModel : ViewModelBase
     {
         if (SelectedStudent == null || SelectedExpectedReturnDate == null)
         { Message = "Select a student and expected return date first."; IsError = true; return; }
-        if (!string.IsNullOrWhiteSpace(EquipmentIdsForMultiCheckout) &&
-            !int.TryParse(EquipmentIdsForMultiCheckout.Split(',')[0].Trim(), out _))
-        { Message = "Enter equipment item IDs separated by commas."; IsError = true; return; }
         try
         {
-            var ids = EquipmentIdsForMultiCheckout.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .Select(int.Parse).ToArray();
-            var rows = await _borrowService.BorrowMultipleAsync(SelectedStudent.Id, ids, SelectedExpectedReturnDate.Value.DateTime);
+            var parts = EquipmentIdsForMultiCheckout.Split(',', StringSplitOptions.TrimEntries);
+            if (parts.Any(string.IsNullOrWhiteSpace) || !parts.All(x => int.TryParse(x, out _)))
+            { Message = "Enter equipment item IDs separated by commas."; IsError = true; return; }
+            var ids = parts.Select(int.Parse).ToArray();
+            var rows = await _api.CheckoutAsync(new CheckoutRequest(SelectedStudent.Id, ids,
+                DateOnly.FromDateTime(SelectedExpectedReturnDate.Value.DateTime)));
             Message = $"Checked out {rows.Count} items together."; IsError = false;
             EquipmentIdsForMultiCheckout = string.Empty;
             await LoadEquipmentAsync();
         }
-        catch (Exception ex) { Message = ex.Message; IsError = true; }
+        catch (Exception ex)
+        {
+            var feedback = EquipmentBorrowingApiFeedback.For(ex);
+            if (EquipmentBorrowingApiFeedback.NeedsRefresh(ex)) await RefreshAsync();
+            Message = feedback;
+            IsError = true;
+        }
     }
 }

@@ -513,6 +513,50 @@ borrow, an item that is not available).
 
 ---
 
+## Laboratory Activity 5 — API and acceptance work
+
+The desktop app now sends asynchronous JSON requests to a separate ASP.NET Core API. PostgreSQL and EF Core are composed by the API; the Avalonia project does not reference Infrastructure, Npgsql, or `DbContext`.
+
+### Start the API and desktop app
+
+Apply the committed PostgreSQL migrations once, with `EQUIPMENTBORROWING_CONNECTION_STRING` set in the same PowerShell session. Keep the connection string local and do not commit it.
+
+```powershell
+$env:EQUIPMENTBORROWING_CONNECTION_STRING = "Host=localhost;Port=5432;Database=equipment_borrowing_lab5_test;Username=postgres;Password=YOUR_LOCAL_PASSWORD"
+dotnet tool install --global dotnet-ef --version 10.0.12
+dotnet ef database update --project src/EquipmentBorrowing.Infrastructure --startup-project src/EquipmentBorrowing.Api
+```
+
+The database must be named `equipment_borrowing_lab5_test` to use the guarded acceptance-data reset script. Create it as a disposable local database first. Run the API in one PowerShell window:
+
+```powershell
+cd "C:\path\to\labs1-3"
+$env:EQUIPMENTBORROWING_CONNECTION_STRING = "Host=localhost;Port=5432;Database=equipment_borrowing_lab5_test;Username=postgres;Password=YOUR_LOCAL_PASSWORD"
+dotnet run --project src/EquipmentBorrowing.Api
+```
+
+The API listens at `http://localhost:5080`; its OpenAPI document is at `http://localhost:5080/openapi/v1.json`. Set the client URL only if the API uses a different address, then run the desktop in another window:
+
+```powershell
+$env:EQUIPMENTBORROWING_API_BASE_URL = "http://localhost:5080/"
+dotnet run --project src/EquipmentBorrowing.Desktop
+```
+
+To prepare the reference acceptance dataset, connect `psql` to the disposable database and run `\i docs/lab5-test-data.sql`. The script checks the current database name and refuses to reset a database with another name. It inserts the reference students, equipment, active/returned loans and relative dates, and prints query results for a fresh-state check. Reset it before each acceptance scenario as directed by the reference document.
+
+### Activity 5 records
+
+- Endpoint descriptions: [`docs/lab5-api-contract.md`](docs/lab5-api-contract.md)
+- OpenAPI contract: [`src/EquipmentBorrowing.Api/openapi.v1.json`](src/EquipmentBorrowing.Api/openapi.v1.json)
+- API-to-use-case traceability and baseline: [`docs/lab5-traceability.md`](docs/lab5-traceability.md)
+- Honest T01–T08 status/evidence log: [`docs/lab5-test-record.md`](docs/lab5-test-record.md)
+- Disposable PostgreSQL reset: [`docs/lab5-test-data.sql`](docs/lab5-test-data.sql)
+- T05-only failure trigger and cleanup: [`docs/lab5-fault-injection.sql`](docs/lab5-fault-injection.sql), [`docs/lab5-fault-cleanup.sql`](docs/lab5-fault-cleanup.sql)
+
+The T01–T08 record marks database-dependent work as not run until it has actual PostgreSQL evidence. A reachable API returning 500 is reported differently from no HTTP response. A lost response to a mutation is treated as an unknown outcome; refresh affected records before retrying.
+
+---
+
 ## 18. Architectural Reflection (Laboratory Activity 3)
 
 **Tracing a Borrow click through the layers**

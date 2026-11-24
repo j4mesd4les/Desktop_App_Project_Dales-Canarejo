@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EquipmentBorrowing.Application.Errors;
-using EquipmentBorrowing.Application.Services;
+using EquipmentBorrowing.Client;
+using EquipmentBorrowing.Contracts;
 using EquipmentBorrowing.Domain;
 using System;
 using System.Collections.ObjectModel;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EquipmentBorrowing.Desktop.ViewModels;
 
-public partial class StudentManagementViewModel(StudentManagementService service) : ViewModelBase
+public partial class StudentManagementViewModel(IEquipmentBorrowingApiClient api) : ViewModelBase
 {
     public ObservableCollection<Student> Students { get; } = new();
 
@@ -37,17 +37,17 @@ public partial class StudentManagementViewModel(StudentManagementService service
         IsLoading = true;
         try
         {
-            var records = await service.GetAllAsync();
+            var records = await api.GetStudentsAsync();
             Students.Clear();
-            foreach (var student in records) Students.Add(student);
+            foreach (var student in records) Students.Add(student.ToModel());
             if (selectedId.HasValue)
                 SelectedStudent = Students.FirstOrDefault(s => s.Id == selectedId.Value);
             Message = Students.Count == 0 ? "No students registered yet." : string.Empty;
             IsError = false;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            Message = "Could not load students. Check the database connection and try again.";
+            Message = EquipmentBorrowingApiFeedback.For(ex);
             IsError = true;
         }
         finally { IsLoading = false; }
@@ -72,8 +72,8 @@ public partial class StudentManagementViewModel(StudentManagementService service
             var isNew = SelectedStudent is null;
             var selectedId = SelectedStudent?.Id;
             var saved = isNew
-                ? await service.RegisterAsync(StudentNumber, Name, Contact)
-                : await service.UpdateAsync(selectedId!.Value, StudentNumber, Name, Contact);
+                ? (await api.CreateStudentAsync(new CreateStudentRequest(StudentNumber, Name, Contact))).ToModel()
+                : (await api.UpdateStudentAsync(selectedId!.Value, new UpdateStudentRequest(StudentNumber, Name, Contact))).ToModel();
             await LoadAsync();
             if (IsError)
             {
@@ -87,11 +87,10 @@ public partial class StudentManagementViewModel(StudentManagementService service
             Message = isNew ? "Student registered." : "Student information updated.";
             IsError = false;
         }
-        catch (ArgumentException ex) { Message = ex.Message; IsError = true; }
-        catch (DuplicateIdentifierError ex) { Message = ex.Message; IsError = true; }
-        catch (Exception)
+        catch (Exception ex)
         {
-            Message = "Could not save the student. Refresh the list before retrying in case the save completed.";
+            if (EquipmentBorrowingApiFeedback.NeedsRefresh(ex)) await LoadAsync();
+            Message = EquipmentBorrowingApiFeedback.For(ex);
             IsError = true;
         }
         finally { IsLoading = false; }
@@ -117,14 +116,15 @@ public partial class StudentManagementViewModel(StudentManagementService service
         IsLoading = true;
         try
         {
-            var saved = await service.SetEligibilityAsync(SelectedStudent.Id, EligibilityAllowed);
+            var saved = (await api.SetEligibilityAsync(SelectedStudent.Id, EligibilityAllowed)).ToModel();
             Message = saved.IsAllowedToBorrow ? "Student may borrow equipment." : "Student is restricted from new borrowings.";
             IsError = false;
             await LoadAsync();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            Message = "Could not update eligibility. Refresh the list before retrying.";
+            if (EquipmentBorrowingApiFeedback.NeedsRefresh(ex)) await LoadAsync();
+            Message = EquipmentBorrowingApiFeedback.For(ex);
             IsError = true;
         }
         finally { IsLoading = false; }

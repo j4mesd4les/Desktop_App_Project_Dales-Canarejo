@@ -1,11 +1,11 @@
 ﻿using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using EquipmentBorrowing.Application.Services;
+using EquipmentBorrowing.Client;
 using EquipmentBorrowing.Desktop.ViewModels;
 using EquipmentBorrowing.Desktop.Views;
-using EquipmentBorrowing.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace EquipmentBorrowing.Desktop;
@@ -23,12 +23,10 @@ public partial class App : Avalonia.Application
         {
             var services = new ServiceCollection();
 
-            services.AddPersistence();
-
-            services.AddTransient<BorrowEquipmentService>();
-            services.AddTransient<ReturnEquipmentService>();
-            services.AddTransient<StudentManagementService>();
-            services.AddTransient<EquipmentManagementService>();
+            var apiBaseUrl = Environment.GetEnvironmentVariable("EQUIPMENTBORROWING_API_BASE_URL")
+                ?? "http://localhost:5080/";
+            var httpClient = new HttpClient { BaseAddress = new Uri(apiBaseUrl.EndsWith('/') ? apiBaseUrl : apiBaseUrl + "/") };
+            services.AddSingleton<IEquipmentBorrowingApiClient>(new EquipmentBorrowingApiClient(httpClient));
 
             services.AddTransient<EquipmentViewModel>();
             services.AddTransient<BorrowingsViewModel>();
@@ -46,19 +44,16 @@ public partial class App : Avalonia.Application
                 DataContext = mainViewModel
             };
 
-            _ = StartDatabaseAsync(serviceProvider, mainViewModel);
+            _ = LoadApiDataAsync(mainViewModel);
         }
 
         base.OnFrameworkInitializationCompleted();
     }
 
-    private static async Task StartDatabaseAsync(
-        IServiceProvider serviceProvider,
-        MainViewModel mainViewModel)
+    private static async Task LoadApiDataAsync(MainViewModel mainViewModel)
     {
         try
         {
-            await serviceProvider.InitializeDatabaseAsync();
             await mainViewModel.EquipmentView.LoadEquipmentAsync();
             await mainViewModel.EquipmentView.LoadStudentsAsync();
             await mainViewModel.BorrowingsView.LoadBorrowingsAsync();
@@ -66,7 +61,7 @@ public partial class App : Avalonia.Application
         catch (Exception)
         {
             mainViewModel.EquipmentView.Message =
-                "Could not connect to the database. Check that PostgreSQL is running and the connection string is set, then restart the app.";
+                "Could not connect to the API. Start the API and check its URL, then refresh this page.";
             mainViewModel.EquipmentView.IsError = true;
         }
     }

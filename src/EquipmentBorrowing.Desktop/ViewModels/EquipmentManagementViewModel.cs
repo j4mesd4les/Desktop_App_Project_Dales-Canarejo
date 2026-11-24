@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EquipmentBorrowing.Application.Errors;
-using EquipmentBorrowing.Application.Services;
+using EquipmentBorrowing.Client;
+using EquipmentBorrowing.Contracts;
 using EquipmentBorrowing.Domain;
 using System;
 using System.Collections.ObjectModel;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EquipmentBorrowing.Desktop.ViewModels;
 
-public partial class EquipmentManagementViewModel(EquipmentManagementService service) : ViewModelBase
+public partial class EquipmentManagementViewModel(IEquipmentBorrowingApiClient api) : ViewModelBase
 {
     public ObservableCollection<Equipment> Equipment { get; } = new();
 
@@ -37,17 +37,17 @@ public partial class EquipmentManagementViewModel(EquipmentManagementService ser
         IsLoading = true;
         try
         {
-            var records = await service.GetAllAsync();
+            var records = await api.GetEquipmentAsync();
             Equipment.Clear();
-            foreach (var item in records) Equipment.Add(item);
+            foreach (var item in records) Equipment.Add(item.ToModel());
             if (selectedId.HasValue)
                 SelectedEquipment = Equipment.FirstOrDefault(e => e.Id == selectedId.Value);
             Message = Equipment.Count == 0 ? "No equipment registered yet." : string.Empty;
             IsError = false;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            Message = "Could not load equipment. Check the database connection and try again.";
+            Message = EquipmentBorrowingApiFeedback.For(ex);
             IsError = true;
         }
         finally { IsLoading = false; }
@@ -72,8 +72,8 @@ public partial class EquipmentManagementViewModel(EquipmentManagementService ser
             var isNew = SelectedEquipment is null;
             var selectedId = SelectedEquipment?.Id;
             var saved = isNew
-                ? await service.RegisterAsync(EquipmentNumber, Name, Type, Description)
-                : await service.UpdateAsync(selectedId!.Value, EquipmentNumber, Name, Type, Description);
+                ? (await api.CreateEquipmentAsync(new CreateEquipmentRequest(EquipmentNumber, Name, Description, Type))).ToModel()
+                : (await api.UpdateEquipmentAsync(selectedId!.Value, new UpdateEquipmentRequest(EquipmentNumber, Name, Description, Type))).ToModel();
             await LoadAsync();
             if (IsError)
             {
@@ -87,11 +87,10 @@ public partial class EquipmentManagementViewModel(EquipmentManagementService ser
             Message = isNew ? "Equipment registered as available." : "Equipment information updated.";
             IsError = false;
         }
-        catch (ArgumentException ex) { Message = ex.Message; IsError = true; }
-        catch (DuplicateIdentifierError ex) { Message = ex.Message; IsError = true; }
-        catch (Exception)
+        catch (Exception ex)
         {
-            Message = "Could not save the equipment. Refresh the list before retrying in case the save completed.";
+            if (EquipmentBorrowingApiFeedback.NeedsRefresh(ex)) await LoadAsync();
+            Message = EquipmentBorrowingApiFeedback.For(ex);
             IsError = true;
         }
         finally { IsLoading = false; }

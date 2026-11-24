@@ -3,6 +3,7 @@
     <StackPanel Grid.Row="0" Spacing="6">
       <TextBlock Text="Borrowings and History" FontSize="28" FontWeight="SemiBold"/>
       <TextBlock Text="Active items can be returned. Search all active and returned records below."/>
+      <TextBlock Text="Loading from API..." IsVisible="{Binding IsLoading}"/>
     </StackPanel>
     <Grid Grid.Row="1" RowDefinitions="Auto,*">
       <TextBlock Text="Active Borrowings" FontSize="18" FontWeight="SemiBold"/>

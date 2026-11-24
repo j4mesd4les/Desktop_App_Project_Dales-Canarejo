@@ -11,7 +11,7 @@
           x:DataType="vm:EquipmentViewModel">
 
 
-	<Grid RowDefinitions="Auto, Auto, *, Auto">
+		<Grid RowDefinitions="Auto, Auto, *, Auto">
 
 		<!-- Header -->
 		<StackPanel Grid.Row="0"
@@ -30,6 +30,8 @@
 			<CheckBox Content="Show only available equipment"
 					  IsChecked="{Binding ShowOnlyAvailable}"
 					  Margin="0,8,0,0"/>
+			<Button Content="Refresh from API" Command="{Binding RefreshCommand}" HorizontalAlignment="Left"/>
+			<TextBlock Text="Loading equipment..." IsVisible="{Binding IsLoading}" FontSize="12" Foreground="{StaticResource AppTextSecondaryBrush}"/>
 
 		</StackPanel>
 
